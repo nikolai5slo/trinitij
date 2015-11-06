@@ -37,7 +37,7 @@ window.onload = function(){
         //scene.fogEnd = 60.0;
 
 
-
+/*
         var skyboxMaterial = new BABYLON.ShaderMaterial("skyboxMaterial", scene, {
             vertexElement: "vertexShaderCode",
             fragmentElement: "fragmentShaderCode",
@@ -49,13 +49,14 @@ window.onload = function(){
         
         var ground = BABYLON.Mesh.CreateGround("ground1", 6, 6, 2, scene);
         ground.material = skyboxMaterial;
+        */
 
         // Skybox
         var skybox = BABYLON.Mesh.CreateBox("skyBox", 9000.0, scene);
 
-        //var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+        var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
         skyboxMaterial.backFaceCulling = false;
-        //skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/sky34/sky1", scene);
+        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/sky1/sky1", scene);
         //skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
         skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
         skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
