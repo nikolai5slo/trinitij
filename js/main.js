@@ -5,75 +5,45 @@ window.onload = function(){
 	// Load the BABYLON 3D engine
 	var engine = new BABYLON.Engine(canvas, true);
 
-    function randomNumber(min, max){
-        return (Math.random()*(max-min))+min;
+    function createParticleMist(scene){
+        var fountain = BABYLON.Mesh.CreateBox("fountain", 0.1, scene);
+       
+        var particleSystem = new BABYLON.ParticleSystem("particles", 30000, scene);
+        fountain.position.y=0;
+        fountain.position.x=0;
+        fountain.position.z=0;
+        particleSystem.particleTexture = new BABYLON.Texture("textures/flare.png", scene);
+        particleSystem.emitRate = 1000;
+        particleSystem.emitter = fountain;
+        particleSystem.minEmitBox = new BABYLON.Vector3(700, -700, 700); // Starting all From
+        particleSystem.maxEmitBox = new BABYLON.Vector3(-700, 700, -700); // To...
+        particleSystem.minSize = 0.3;
+        particleSystem.maxSize = 1;
+        particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+        
+        particleSystem.textureMask = new BABYLON.Color4(1, 1, 1, 1);
+        
+        particleSystem.color1 = new BABYLON.Color4(1, 0.4, 0, 0);
+        particleSystem.color2 = new BABYLON.Color4(0, 0, 0, 0);
+        particleSystem.colorDead = new BABYLON.Color4(1, 1, 1, 1);
+        
+        particleSystem.maxLifeTime = 90;
+        
+        particleSystem.gravity = new BABYLON.Vector3(0, 0, 1);
+        particleSystem.direction1 = new BABYLON.Vector3(-1, -1, -1);
+        particleSystem.direction2 = new BABYLON.Vector3(1, 1, 1);
+
+        
+        particleSystem.minAngularSpeed = 0;
+        particleSystem.maxAngularSpeed = Math.PI;
+        particleSystem.minEmitPower = 1;
+        particleSystem.maxEmitPower = 1;
+        
+        particleSystem.updateSpeed = 0.1;
+        // Start the particle system
+        particleSystem.start();
     }
 
-    Comet = function(radius, scene) {
-        // Call the super class BABYLON.Mesh
-        BABYLON.Mesh.call(this, "comet", scene);
-
-
-        // Sphere shape creation
-        var vertexData = BABYLON.VertexData.CreateSphere(radius,2);
-        // Apply the shape to our tree
-        vertexData.applyToMesh(this, false);
-
-        var positions = this.getVerticesData(BABYLON.VertexBuffer.PositionKind);
-        var numberOfPoints = positions.length/3;
-
-        // Build a map containing all vertices at the same position
-        var map = [];
-        for (var i=0; i<numberOfPoints; i++) {
-            var p =new  BABYLON.Vector3(positions[i*3], positions[i*3+1], positions[i*3+2]);
-
-            var found = false;
-            for (var index=0; index<map.length&&!found; index++) {
-                var array = map[index];
-                var p0 = array[0];
-                if (p0.equals (p) || (p0.subtract(p)).lengthSquared() < 0.01){
-                    array.push(i*3);
-                    found = true;
-                }
-            }
-            if (!found) {
-                var array = [];
-                array.push(p, i*3);
-                map.push(array);
-            }
-        }
-/*
-        var that = this;
-        // For each vertex at a given position, move it with a random value
-        map.forEach(function(array) {
-            var index, min = 0, max = 3;
-            var rx = randomNumber(min,max);
-            var ry = randomNumber(min,max);
-            var rz = randomNumber(min,max);
-
-            for (index = 1; index<array.length; index++) {
-                var i = array[index];
-                positions[i] += rx;
-                positions[i+1] += ry;
-                positions[i+2] += rz;
-            }
-        });
-*/
-
-        this.convertToFlatShadedMesh();
-    
-    };
-
-    // Our object is a BABYLON.Mesh
-    Comet.prototype = Object.create(BABYLON.Mesh.prototype);
-    // And its constructor is the Tree function described above.
-    Comet.prototype.constructor = Comet;
-
-   
-
-    function createCometNest(){
-
-    }
 
 	function createScene() {
 		var scene = new BABYLON.Scene(engine);
@@ -86,7 +56,62 @@ window.onload = function(){
 		camera.attachControl(canvas, true);
 
 
-        var comet = new Comet(2, scene);
+        // Create paticle system
+        createParticleMist(scene);
+
+        //var asteroid = new Asteroid(20, scene);
+        //var asteroid = BABYLON.Mesh.CreateSphere("Asteroid", 60, 10, scene, true);
+        //url="asteroid.babylon"
+        //url += (url.match(/\?/) == null ? "?" : "&") + (new Date()).getTime()
+        BABYLON.SceneLoader.ImportMesh("Asteroid", "obj/", "asteroid.babylon", scene, function (m, particleSystems) {
+
+            for (var index = 0; index < 50; index++) {
+                var asteroid = m[0].createInstance("i" + index);
+
+                asteroid.scaling.x*=1+Math.random()*2;
+                asteroid.scaling.y*=1+Math.random()*2;
+                asteroid.scaling.z*=1+Math.random()*2;
+                asteroid.position.x=Math.random()*200-100;
+                asteroid.position.y=Math.random()*200-100;
+                asteroid.position.z=Math.random()*200-100;
+                asteroid.rotation.x+=Math.random()*2
+                asteroid.rotation.y+=Math.random()*2
+
+                asteroid.material.specularTexture = new BABYLON.Texture("obj/astbump.jpg", scene);
+                //asteroid.material.specularColor = new BABYLON.Color3(0.3, 0.2, 0.2);
+                asteroid.material.specularPower = 2;
+
+            }
+
+            //asteroid.material.diffuseTexture = new BABYLON.Texture("obj/asteroid.Asteroid_TEXTURE.jpg", scene)
+            //asteroid.material.diffuseTexture = new BABYLON.Texture("obj/asttext.png", scene)
+            //asteroid.material.bumpTexture = new BABYLON.Texture("obj/astbump.jpg", scene);
+            //asteroid.material = new BABYLON.StandardMaterial("skull", scene);
+            //asteroid.material.emissiveTexture = new BABYLON.Texture("textures/ast.jpg", scene);
+            //asteroid.material.diffuseTexture.uScale = 20000; 
+            //asteroid.material.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+
+       });
+        //var asteroid = BABYLON.SceneLoader.ImportMesh("Sphere", "obj/asteroid.babylon", "Sphere", scene, function (newMeshes, particleSystems) {});
+
+       
+        //var asteroid = BABYLON.MeshBuilder.CreateIcoSphere("ico", {radius: 5, radiusY: 8, subdivisions: 10, updatable: true}, scene);
+        //asteroid.applyDisplacementMap("textures/dis.jpg", 0, 2.5);
+   //     var disBuffer = new Uint8Array(800*800);
+        //var val=256/2;
+        /*for(var i=0;i<disBuffer.length;i++){
+            //val+=Math.random()*10-10-10*((val-128)/128.0);
+            disBuffer[i]=Math.random()*256;
+            //disBuffer[i]=val;
+        }*/
+        //var disBuffer = Terrain(9,2);
+
+        //asteroid.applyDisplacementMapFromBuffer(disBuffer, 9, 2 , 0 ,1.3);
+/*
+        asteroid.scaling.x*=1+Math.random()/2.0;
+        asteroid.scaling.y*=1+Math.random()/2.0;
+        asteroid.scaling.z*=1+Math.random()/2.0;
+        */
 
 
 
@@ -132,7 +157,7 @@ window.onload = function(){
     	//var earthMaterial = new BABYLON.CubeTexture("earth", scene);
     	earthMaterial.diffuseTexture = new BABYLON.Texture("textures/earth1.jpg", scene);
 		//earthMaterial.bumpTexture = new BABYLON.Texture("textures/earthbump.jpg", scene);
-		earthMaterial.specularTexture = new BABYLON.Texture("textures/earthspec2.jpg", scene);
+		//earthMaterial.specularTexture = new BABYLON.Texture("textures/earthspec2.jpg", scene);
 		earthMaterial.emissiveTexture = new BABYLON.Texture("textures/earthlights2.jpg", scene);
 		earthMaterial.specularPower = 100; 
 
