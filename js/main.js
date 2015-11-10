@@ -157,7 +157,7 @@ window.onload = function(){
     	//var earthMaterial = new BABYLON.CubeTexture("earth", scene);
     	earthMaterial.diffuseTexture = new BABYLON.Texture("textures/earth1.jpg", scene);
 		//earthMaterial.bumpTexture = new BABYLON.Texture("textures/earthbump.jpg", scene);
-		//earthMaterial.specularTexture = new BABYLON.Texture("textures/earthspec2.jpg", scene);
+		earthMaterial.specularTexture = new BABYLON.Texture("textures/earthspec2.jpg", scene);
 		earthMaterial.emissiveTexture = new BABYLON.Texture("textures/earthlights2.jpg", scene);
 		earthMaterial.specularPower = 100; 
 
