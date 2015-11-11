@@ -1,0 +1,19 @@
+	Exporter version: 3.0.6, Blender version: 2.76 (sub 0)
+========= Conversion from Blender to Babylon.js =========
+	Python World class constructor completed
+	processing begun of mesh:  Asteroid
+		processing begun of Standard material:  Material
+		Diffuse texture found
+			Image texture found, type:  diffuseTexture, mapped using: "UVMap"
+		num positions      :  458
+		num normals        :  458
+		num uvs            :  916
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  1152
+	processing begun of camera (FreeCamera):  Camera
+	processing begun of light (POINT):  Lamp
+========= Writing of scene file started =========
+========= Writing of scene file completed =========
+========= end of processing =========
+elapsed time:  0 min, 0.0307 secs

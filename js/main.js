@@ -12,6 +12,7 @@ window.onload = function(){
         fountain.position.y=0;
         fountain.position.x=0;
         fountain.position.z=0;
+
         particleSystem.particleTexture = new BABYLON.Texture("textures/flare.png", scene);
         particleSystem.emitRate = 1000;
         particleSystem.emitter = fountain;
@@ -47,6 +48,7 @@ window.onload = function(){
 
 	function createScene() {
 		var scene = new BABYLON.Scene(engine);
+        scene.enablePhysics(new BABYLON.Vector3(0,0,0.000), new BABYLON.OimoJSPlugin());
 
 		scene.actionManager = new BABYLON.ActionManager(scene);
 
@@ -59,61 +61,216 @@ window.onload = function(){
         // Create paticle system
         createParticleMist(scene);
 
-        //var asteroid = new Asteroid(20, scene);
-        //var asteroid = BABYLON.Mesh.CreateSphere("Asteroid", 60, 10, scene, true);
-        //url="asteroid.babylon"
-        //url += (url.match(/\?/) == null ? "?" : "&") + (new Date()).getTime()
-        BABYLON.SceneLoader.ImportMesh("Asteroid", "obj/", "asteroid.babylon", scene, function (m, particleSystems) {
+        // Add asteroids
 
-            for (var index = 0; index < 50; index++) {
+
+        var url = "http://jerome.bousquie.fr/BJS/images/rock.jpg";
+        var mat = new BABYLON.StandardMaterial("mat1", scene);
+        var texture = new BABYLON.Texture(url, scene);
+        mat.diffuseTexture = texture;
+        mat.backFaceCulling = false;
+
+
+         var fact = 600;   // density
+  var scaleX = 0.0;
+  var scaleY = 0.0;
+  var scaleZ = 0.0;
+  var grey = 0.0; 
+
+// custom vertex function
+  var myVertexFunction = function(particle, vertex, i) {
+      vertex.x *= (Math.random() + 1);
+      vertex.y *= (Math.random() + 1);
+      vertex.z *= (Math.random() + 1);
+  };
+
+ // custom position function
+ /*
+ var myPositionFunction = function(particle, i, s) {
+      scaleX = Math.random() * 2 + 0.8;
+      scaleY = Math.random() + 0.8;
+      scaleZ = Math.random() * 2 + 0.8;
+      particle.scale.x = scaleX;
+      particle.scale.y = scaleY;
+      particle.scale.z = scaleZ;
+      particle.position.x = (Math.random() - 0.5) * fact;
+      particle.position.y = (Math.random() - 0.5) * fact;
+      particle.position.z = (Math.random() - 0.5) * fact;
+      particle.rotation.x = Math.random() * 3.5;
+      particle.rotation.y = Math.random() * 3.5;
+      particle.rotation.z = Math.random() * 3.5;
+      grey = 1.0 - Math.random() * 0.3;
+      particle.color = new BABYLON.Color4(grey, grey, grey, 1);
+  };
+  */
+ 
+ 
+  // Particle system creation : Immutable
+
+  var SPS = new BABYLON.SolidParticleSystem('SPS', scene, {updatable: false});
+  var sphere = BABYLON.MeshBuilder.CreateSphere("s", {diameter: 6, segments: 3}, scene);
+  SPS.addShape(sphere, 200, {vertexFunction: myVertexFunction}) ;
+  var mesh = SPS.buildMesh();
+  mesh.position.z=0;
+  mesh.material = mat;
+  // dispose the model
+  sphere.dispose();
+
+
+     SPS.initParticles = function() {
+                // just recycle everything
+                 for (var p = 0; p < this.nbParticles; p++) {
+                    this.recycleParticle(this.particles[p]);
+                    this.particles[p].position.x = Math.random() * 200 - 100;
+                    this.particles[p].position.y = Math.random() * 200 - 100;
+                    this.particles[p].position.z = Math.random() * 1200 -500;
+                }
+              };
+
+
+                // recycle
+              SPS.recycleParticle = function(particle) {
+                 scaleX = Math.random()/2  + 0.1;
+                  scaleY = Math.random()/2 + 0.1;
+                  scaleZ = Math.random()/2 + 0.1;
+                  particle.scale.x = scaleX;
+                  particle.scale.y = scaleY;
+                  particle.scale.z = scaleZ;
+                  particle.position.x = Math.random() * 200 - 100;
+                  particle.position.y = Math.random() * 200 - 100;
+                  particle.position.z = -500;
+                  particle.rotation.x = Math.random() * 3.5;
+                  particle.rotation.y = Math.random() * 3.5;
+                  particle.rotation.z = Math.random() * 3.5;
+                  grey = 1.0 - Math.random() * 0.3;
+                  particle.color = new BABYLON.Color4(grey, grey, grey, 1);
+
+                  particle.velocity.z =  Math.random() * 2;
+                  particle.velocity.x =  Math.random()/2 - 0.25;
+                  particle.velocity.y =  Math.random()/2 - 0.25;
+
+              };
+
+
+               // update : will be called by setParticles()
+              SPS.updateParticle = function(particle) {  
+                // some physics here 
+                if (particle.position.z > 800) {
+                  this.recycleParticle(particle);
+                }
+                //particle.velocity.y += gravity;                         // apply gravity to y
+                (particle.position).addInPlace(particle.velocity);      // update particle new position
+                //particle.position.y += speed / 2;
+                
+                var sign = (particle.idx % 2 == 0) ? 1 : -1;            // rotation sign and new value
+                particle.rotation.z += 0.009 * sign;
+                particle.rotation.x += 0.003 * sign;
+                particle.rotation.y += 0.002 * sign;
+              }; 
+
+
+               // init all particle values and set them once to apply textures, colors, etc
+              SPS.initParticles();
+              //SPS.updateParticleVertex = myVertexFunction;
+
+              SPS.setParticles();
+              SPS.refreshVisibleSize();  
+
+              SPS.computeParticleVertex = false; 
+               
+              // Tuning : 
+              SPS.computeParticleColor = false;
+              SPS.computeParticleTexture = false;
+
+  // SPS mesh animation
+  //var k = Date.now();
+  scene.registerBeforeRender(function() {
+    //SPS.mesh.rotation.y += 0.001;
+    //SPS.mesh.position.y = Math.sin((k - Date.now())/1000) * 2;
+    //k += 0.02;
+                SPS.setParticles();
+                SPS.refreshVisibleSize();  
+              SPS.computeParticleVertex = false;
+  });
+
+        var asteroids= [];
+        asteroidMaterial = null;
+        BABYLON.SceneLoader.ImportMesh("Asteroid", "obj/", "asteroid1.babylon", scene, function (m, particleSystems) {
+            for (var index = 0; index < 200; index++) {
                 var asteroid = m[0].createInstance("i" + index);
+                asteroids.push(asteroid);
 
                 asteroid.scaling.x*=1+Math.random()*2;
                 asteroid.scaling.y*=1+Math.random()*2;
                 asteroid.scaling.z*=1+Math.random()*2;
                 asteroid.position.x=Math.random()*200-100;
                 asteroid.position.y=Math.random()*200-100;
-                asteroid.position.z=Math.random()*200-100;
+                asteroid.position.z=Math.random()*1200-500;
                 asteroid.rotation.x+=Math.random()*2
                 asteroid.rotation.y+=Math.random()*2
 
-                asteroid.material.specularTexture = new BABYLON.Texture("obj/astbump.jpg", scene);
-                //asteroid.material.specularColor = new BABYLON.Color3(0.3, 0.2, 0.2);
-                asteroid.material.specularPower = 2;
+                if(asteroidMaterial==null){
+                    asteroid.material.specularTexture = new BABYLON.Texture("obj/astbump.jpg", scene);
+                    //asteroid.material.specularColor = new BABYLON.Color3(0.3, 0.2, 0.2);
+                    asteroid.material.specularPower = 2;
+
+                    asteroidMaterial = asteroid.material;
+                }else asteroid.material=asteroidMaterial;
+
+
+                asteroid.setPhysicsState({impostor:BABYLON.PhysicsEngine.SphereImpostor, move:true, mass:1.5, friction:0.5, restitution:0.5});
+                asteroid.applyImpulse(new BABYLON.Vector3(Math.random()*10-5,Math.random()*10-5,Math.random()*5+5), asteroid.position);
+  
+
+                // Particle system of asteorid
+/*
+                var particleSystem = new BABYLON.ParticleSystem("particles", 8000, scene);
+
+                particleSystem.particleTexture = new BABYLON.Texture("textures/flare.png", scene);
+
+                particleSystem.emitter = asteroid;
+
+                particleSystem.emitRate = 100;
+                particleSystem.minEmitBox = new BABYLON.Vector3(-1, -1, 0); // Starting all From
+                particleSystem.maxEmitBox = new BABYLON.Vector3(1, 1, 0); // To...
+                particleSystem.minSize = 0.1;
+                particleSystem.maxSize = 0.2;
+                particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+                
+                particleSystem.textureMask = new BABYLON.Color4(1, 1, 1, 1);
+                
+                particleSystem.color1 = new BABYLON.Color4(0.1, 0, 0, 0.5);
+                particleSystem.color2 = new BABYLON.Color4(0.4, 0.4, 0.4, 0.2);
+                particleSystem.colorDead = new BABYLON.Color4(0, 0, 0, 0);
+                
+                particleSystem.minLifeTime = 0.3;
+                particleSystem.maxLifeTime = 1.3;
+
+                //particleSystem.gravity = new BABYLON.Vector3(0, 0, 1);
+                particleSystem.direction1 = new BABYLON.Vector3(-0.2, -0.2, -0.2);
+                particleSystem.direction2 = new BABYLON.Vector3(0.2, 0.2, 0.2);
+
+
+                
+                particleSystem.minAngularSpeed = 0;
+                particleSystem.maxAngularSpeed = Math.PI;
+                particleSystem.minEmitPower = 0.2;
+                particleSystem.maxEmitPower = 0.5;
+                
+                particleSystem.updateSpeed = 0.005;
+                // Start the particle system
+                particleSystem.start();*/
 
             }
-
-            //asteroid.material.diffuseTexture = new BABYLON.Texture("obj/asteroid.Asteroid_TEXTURE.jpg", scene)
-            //asteroid.material.diffuseTexture = new BABYLON.Texture("obj/asttext.png", scene)
-            //asteroid.material.bumpTexture = new BABYLON.Texture("obj/astbump.jpg", scene);
-            //asteroid.material = new BABYLON.StandardMaterial("skull", scene);
-            //asteroid.material.emissiveTexture = new BABYLON.Texture("textures/ast.jpg", scene);
-            //asteroid.material.diffuseTexture.uScale = 20000; 
-            //asteroid.material.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
-
        });
-        //var asteroid = BABYLON.SceneLoader.ImportMesh("Sphere", "obj/asteroid.babylon", "Sphere", scene, function (newMeshes, particleSystems) {});
 
-       
-        //var asteroid = BABYLON.MeshBuilder.CreateIcoSphere("ico", {radius: 5, radiusY: 8, subdivisions: 10, updatable: true}, scene);
-        //asteroid.applyDisplacementMap("textures/dis.jpg", 0, 2.5);
-   //     var disBuffer = new Uint8Array(800*800);
-        //var val=256/2;
-        /*for(var i=0;i<disBuffer.length;i++){
-            //val+=Math.random()*10-10-10*((val-128)/128.0);
-            disBuffer[i]=Math.random()*256;
-            //disBuffer[i]=val;
-        }*/
-        //var disBuffer = Terrain(9,2);
-
-        //asteroid.applyDisplacementMapFromBuffer(disBuffer, 9, 2 , 0 ,1.3);
-/*
-        asteroid.scaling.x*=1+Math.random()/2.0;
-        asteroid.scaling.y*=1+Math.random()/2.0;
-        asteroid.scaling.z*=1+Math.random()/2.0;
-        */
-
-
+  scene.registerBeforeRender(function() {
+    asteroids.forEach(function(ast){
+        if(ast.position.z>700){
+            ast.position.z=-500;
+        }
+    });
+  });
 
         // Skybox
         var skybox = BABYLON.Mesh.CreateBox("skyBox", 9000.0, scene);
