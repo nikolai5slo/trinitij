@@ -1,8 +1,10 @@
+var FUCKER;
+
 window.onload = function(){
-	// Get the canvas element from our HTML below
+	//Shranimo referenco na kanvas
 	var canvas = document.querySelector("#canvas");
 
-	// Load the BABYLON 3D engine
+	//naložimo kanvas v babylonov izris
 	var engine = new BABYLON.Engine(canvas, true);
 
   function createParticleMist(scene){
@@ -46,6 +48,7 @@ window.onload = function(){
   }
 
   function createScene() {
+	var loader = null;
     var scene = new BABYLON.Scene(engine);
     scene.enablePhysics(new BABYLON.Vector3(0,0,0.005), new BABYLON.OimoJSPlugin());
 
@@ -66,7 +69,6 @@ window.onload = function(){
     var texture = new BABYLON.Texture(url, scene);
     mat.diffuseTexture = texture;
     mat.backFaceCulling = false;
-
 
     var fact = 600;   // density
     var scaleX = 0.0;
@@ -164,7 +166,27 @@ window.onload = function(){
     SPS.computeParticleVertex = false;
     });
 
+	var igralec = new Igralec(scene);
+	BABYLON.SceneLoader.ImportMesh("Igralec", "obj/", "Igralec.babylon", scene, 
+			function(objectMeshes){
+				FUCKER = objectMeshes[0].createInstance("igralec");	//ustvari novo instanco objekta z danim id-jem
+			}
+		);
+	igralec.instanca = FUCKER;
+	//igralec.instanca = "MADAFAKER";	//deluje in spremeni instanco
+	console.log(igralec);
+	
     var asteroids= [];
+	/*loader = new AsteoridLoader(scene);
+	//console.log(loader);
+	//console.log(loader.mesh);
+	//console.log(loader.material);
+	for (var index = 0; index < 200; index++) {
+		var tmpAster = new Asteroid();
+		tmpAster.createAsteroid(loader, index);
+		asteroids.push(tmpAster);
+	}*/
+	
     asteroidMaterial = null;
     BABYLON.SceneLoader.ImportMesh("Asteroid", "obj/", "asteroid1.babylon", scene, function (m, particleSystems) {
       for (var index = 0; index < 200; index++) {
@@ -194,13 +216,14 @@ window.onload = function(){
 
         }
     });
+	console.log(asteroidMaterial);	//TO FAKING NE DELA KOT BI MORALO!!!! Je null
 
     scene.registerBeforeRender(function() {
-      asteroids.forEach(function(ast){
-        if(ast.position.z>700){
-          ast.position.z=-500;
-        }
-      });
+		asteroids.forEach(function(objekt){
+			if(objekt.position.z > 700){
+				objekt.position.z = -500;
+			}
+		});
     });
 
     // Skybox
@@ -287,8 +310,6 @@ window.onload = function(){
   	// Create dynamic stars
   	return scene;
   };
-
-
 
 	// Now, call the createScene function that you just finished creating
 	var scene = createScene();

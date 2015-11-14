@@ -2,31 +2,58 @@
 <html>
 
 <head>
+	<!-- **************** -->
+	<!-- ***** INFO ***** -->
+	<!-- **************** -->
+	
 	<meta charset="utf-8">
 	<title>Trinitij</title>
+	
+	<!-- *************** -->
+	<!-- ***** CSS ***** -->
+	<!-- *************** -->
+	
 	<style>
-	html, body {
-		overflow: hidden;
-		width: 100%;
-		height: 100%;
-		margin: 0;
-		padding: 0;
-	}
+		html, body {
+			overflow: hidden;
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
 
-	#canvas {
-		width: 100%;
-		height: 100%;
-		touch-action: none;
-	}
+		#canvas {
+			width: 100%;
+			height: 100%;
+			touch-action: none;
+		}
 	</style>
+	
+	<!-- ********************** -->
+	<!-- ***** JAVASCRIPT ***** -->
+	<!-- ********************** -->
+	
+	<!-- skripta, ki omogoči dotike (za delo z zasloni na dotik) -->
 	<script src="http://www.babylonjs.com/hand.minified-1.2.js"></script>
+	
+	<!-- fizikalni knižici -->
     <script src="http://www.babylonjs.com/cannon.js"></script>
     <script src="http://www.babylonjs.com/oimo.js"></script>
+	
+	<!-- skripta, ki naloži babylon.js -->
     <script src="http://www.babylonjs.com/babylon.js"></script>
-	<script src="js/oimo.min.js"></script>
+	<!--<script src="js/oimo.min.js"></script>-->
+	
+	<!-- skripte igre -->
+	<script src="js/igralec.js"></script>
+	<script src="js/asteroid.js"></script>
 	<script src="js/main.js"></script>
 
-
+	<!-- ********************** -->
+	<!-- ***** SENČILNIKI ***** -->
+	<!-- ********************** -->
+	
+	<!-- senčilnik ogljišč -->
 	<script type="application/vertexShader" id="vertexShaderCode">
         precision highp float;
  
@@ -53,46 +80,46 @@
         }
     </script>
    
+   <!-- senčilnik fragmentov -->
     <script type="application/fragmentShader" id="fragmentShaderCode">
-    precision highp float;
+		precision highp float;
+
+		varying vec2 vUV;
+		varying vec2 resolution;
+		varying vec2 mouse;
+		varying float time;
+
+		#ifdef GL_ES
+		precision mediump float;
+		#endif
+
+		// Perlin noise
 
 
-    varying vec2 vUV;
-    varying vec2 resolution;
-    varying vec2 mouse;
-    varying float time;
+		float noise2(vec2 p) {
+			return fract(sin(15.8 * p.x + 35.7 * p.y) * 43648.23)*2.0 - 1.0;
+		}
 
-	#ifdef GL_ES
-	precision mediump float;
-	#endif
+		float dotGridGradient(vec2 ip, vec2 p){
+			// noise2 function that returns a vec2 would be better
+			return dot(p - ip, vec2(noise2(ip), noise2(ip + 100.0)));
+		}
 
-	// Perlin noise
+		float noise(vec2 p){
+			vec2 ip = floor(p), u = fract(p);
+			u = (3.0 - 2.0*u)*u*u;
+			float f0 = dotGridGradient(ip + vec2(0.0, 0.0), p);
+			float f1 = dotGridGradient(ip + vec2(1.0, 0.0), p);
+			float f2 = dotGridGradient(ip + vec2(0.0, 1.0), p);
+			float f3 = dotGridGradient(ip + vec2(1.0, 1.0), p);
+			return mix(mix(f0, f1, u.x), mix(f2, f3, u.x), u.y);
+		}
 
-
-	float noise2(vec2 p) {
-		return fract(sin(15.8 * p.x + 35.7 * p.y) * 43648.23)*2.0 - 1.0;
-	}
-
-	float dotGridGradient(vec2 ip, vec2 p){
-		// noise2 function that returns a vec2 would be better
-		return dot(p - ip, vec2(noise2(ip), noise2(ip + 100.0)));
-	}
-
-	float noise(vec2 p){
-		vec2 ip = floor(p), u = fract(p);
-		u = (3.0 - 2.0*u)*u*u;
-		float f0 = dotGridGradient(ip + vec2(0.0, 0.0), p);
-		float f1 = dotGridGradient(ip + vec2(1.0, 0.0), p);
-		float f2 = dotGridGradient(ip + vec2(0.0, 1.0), p);
-		float f3 = dotGridGradient(ip + vec2(1.0, 1.0), p);
-		return mix(mix(f0, f1, u.x), mix(f2, f3, u.x), u.y);
-	}
-
-	void main() {
-		vec2 p = gl_FragCoord.xy / resolution.xy * 10.0/mouse.y;
-		p.x *= resolution.x/resolution.y;
-		gl_FragColor = vec4(vec3(noise(p)*0.5 + 0.5), 1.0);
-	}
+		void main() {
+			vec2 p = gl_FragCoord.xy / resolution.xy * 10.0/mouse.y;
+			p.x *= resolution.x/resolution.y;
+			gl_FragColor = vec4(vec3(noise(p)*0.5 + 0.5), 1.0);
+		}
     </script>
  
 </head>
