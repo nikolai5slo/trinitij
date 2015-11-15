@@ -47,7 +47,7 @@ window.onload = function(){
 
   function createScene() {
     var scene = new BABYLON.Scene(engine);
-    scene.enablePhysics(new BABYLON.Vector3(0,0,0.005), new BABYLON.OimoJSPlugin());
+    scene.enablePhysics(new BABYLON.Vector3(0,0,3), new BABYLON.OimoJSPlugin());
 
     scene.actionManager = new BABYLON.ActionManager(scene);
 
@@ -58,7 +58,7 @@ window.onload = function(){
 
 
     // Create paticle system
-      createParticleMist(scene);
+    createParticleMist(scene);
 
     // Add asteroids
     var url = "http://jerome.bousquie.fr/BJS/images/rock.jpg";
@@ -159,9 +159,9 @@ window.onload = function(){
 
     // SPS mesh animation
     scene.registerBeforeRender(function() {
-    SPS.setParticles();
-    SPS.refreshVisibleSize();  
-    SPS.computeParticleVertex = false;
+      SPS.setParticles();
+      SPS.refreshVisibleSize();  
+      SPS.computeParticleVertex = false;
     });
 
     var asteroids= [];
@@ -171,14 +171,14 @@ window.onload = function(){
         var asteroid = m[0].createInstance("i" + index);
         asteroids.push(asteroid);
 
-        asteroid.scaling.x*=1+Math.random()*2;
-        asteroid.scaling.y*=1+Math.random()*2;
-        asteroid.scaling.z*=1+Math.random()*2;
-        asteroid.position.x=Math.random()*200-100;
-        asteroid.position.y=Math.random()*200-100;
-        asteroid.position.z=Math.random()*1200-500;
-        asteroid.rotation.x+=Math.random()*2
-        asteroid.rotation.y+=Math.random()*2
+        asteroid.scaling.x*=10+Math.random()*30;
+        asteroid.scaling.y*=10+Math.random()*30;
+        asteroid.scaling.z*=10+Math.random()*30;
+        asteroid.position.x=Math.random()*2000-1000;
+        asteroid.position.y=Math.random()*2000-1000;
+        asteroid.position.z=Math.random()*6500-500;
+        /*asteroid.rotation.x+=Math.random()*2
+        asteroid.rotation.y+=Math.random()*2*/
 
         if(asteroidMaterial==null){
           asteroid.material.specularTexture = new BABYLON.Texture("obj/astbump.jpg", scene);
@@ -189,7 +189,7 @@ window.onload = function(){
         }else asteroid.material=asteroidMaterial;
 
 
-        asteroid.setPhysicsState({impostor:BABYLON.PhysicsEngine.SphereImpostor, move:true, mass:1.5, friction:0.5, restitution:0.5});
+        asteroid.setPhysicsState({impostor:BABYLON.PhysicsEngine.SphereImpostor, move:true, mass:1, friction:0.5, restitution:0.5});
         asteroid.applyImpulse(new BABYLON.Vector3(Math.random()*10-5,Math.random()*10-5,Math.random()*5+5), asteroid.position);
 
         }
@@ -197,8 +197,19 @@ window.onload = function(){
 
     scene.registerBeforeRender(function() {
       asteroids.forEach(function(ast){
-        if(ast.position.z>700){
+          //ast.translate(BABYLON.Axis.X, 200, BABYLON.Space.WORLD);
+        if(ast.position.z>6000){
+          console.log("translate");
+          ast.setPhysicsState(BABYLON.PhysicsEngine.NoImpostor);
           ast.position.z=-500;
+          //ast.setOrientation(0,0,0);
+          //ast.moveWithCollisions(new BABYLON.Vector3(0,0,-500));
+          //ast.translate(BABYLON.Axis.Z, -6500, BABYLON.Space.WORLD); 
+          ast.updatePhysicsBodyPosition();
+          //ast.translate(BABYLON.Axis.Z, -6500, BABYLON.Space.WORLD); 
+          ast.refreshBoundingInfo();
+          ast.setPhysicsState({impostor:BABYLON.PhysicsEngine.SphereImpostor, move:true, mass:1, friction:0.5, restitution:0.5});
+          //ast.applyImpulse(new BABYLON.Vector3(Math.random()*10-5,Math.random()*10-5,Math.random()*5+5), ast.position);
         }
       });
     });
