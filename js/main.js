@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 var ST_NASPROTNIKOV;
 var TIRNITIJ_DEF_POS;
 var NASPROTNIK_START_DIST;
@@ -14,65 +15,37 @@ window.onload = function() {
 	var trinitij;
 	var nasprotniki = [];
 	
+=======
+var FUCKER;
+
+
+function randomNumber(min,max){
+  return (Math.random()*(max-min))+min;
+}
+
+window.onload = function(){
+>>>>>>> origin/master
 	//Shranimo referenco na kanvas
 	var canvas = document.querySelector("#canvas");
 
 	//naložimo kanvas v babylonov izris
 	var engine = new BABYLON.Engine(canvas, true);
 
-  function createParticleMist(scene){
-    var fountain = BABYLON.Mesh.CreateBox("fountain", 0.1, scene);
-
-    var particleSystem = new BABYLON.ParticleSystem("particles", 30000, scene);
-    fountain.position.y=0;
-    fountain.position.x=0;
-    fountain.position.z=0;
-
-    particleSystem.particleTexture = new BABYLON.Texture("textures/flare.png", scene);
-    particleSystem.emitRate = 1000;
-    particleSystem.emitter = fountain;
-    particleSystem.minEmitBox = new BABYLON.Vector3(700, -700, 700); // Starting all From
-    particleSystem.maxEmitBox = new BABYLON.Vector3(-700, 700, -700); // To...
-    particleSystem.minSize = 0.3;
-    particleSystem.maxSize = 1;
-    particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-    
-    particleSystem.textureMask = new BABYLON.Color4(1, 1, 1, 1);
-    
-    particleSystem.color1 = new BABYLON.Color4(1, 0.4, 0, 0);
-    particleSystem.color2 = new BABYLON.Color4(0, 0, 0, 0);
-    particleSystem.colorDead = new BABYLON.Color4(1, 1, 1, 1);
-    
-    particleSystem.maxLifeTime = 90;
-    
-    particleSystem.gravity = new BABYLON.Vector3(0, 0, 1);
-    particleSystem.direction1 = new BABYLON.Vector3(-1, -1, -1);
-    particleSystem.direction2 = new BABYLON.Vector3(1, 1, 1);
-
-    
-    particleSystem.minAngularSpeed = 0;
-    particleSystem.maxAngularSpeed = Math.PI;
-    particleSystem.minEmitPower = 1;
-    particleSystem.maxEmitPower = 1;
-    
-    particleSystem.updateSpeed = 0.1;
-    // Start the particle system
-    particleSystem.start();
-  }
+  
 
   function createScene() {
-	var loader = null;
+	 var loader = null;
     var scene = new BABYLON.Scene(engine);
     scene.enablePhysics(new BABYLON.Vector3(0,0,3), new BABYLON.OimoJSPlugin());
 
     scene.actionManager = new BABYLON.ActionManager(scene);
 
-    var light = new BABYLON.PointLight("Omni", new BABYLON.Vector3(10, 50, 50), scene);
     var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
 
     camera.attachControl(canvas, true);
 
 
+<<<<<<< HEAD
     // Create paticle system
     createParticleMist(scene);
 
@@ -248,6 +221,23 @@ window.onload = function() {
         }
       });
     });
+=======
+    var astNest=AsteoridNest(scene);
+
+    
+
+	var igralec = new Igralec(scene);
+	BABYLON.SceneLoader.ImportMesh("Igralec", "obj/", "Igralec.babylon", scene, 
+			function(objectMeshes){
+				FUCKER = objectMeshes[0].createInstance("igralec");	//ustvari novo instanco objekta z danim id-jem
+			}
+		);
+	igralec.instanca = FUCKER;
+	//igralec.instanca = "MADAFAKER";	//deluje in spremeni instanco
+	console.log(igralec);
+	
+    
+>>>>>>> origin/master
 
     // Skybox
     var skybox = BABYLON.Mesh.CreateBox("skyBox", 9000.0, scene);
@@ -265,69 +255,13 @@ window.onload = function() {
     skybox.material = skyboxMaterial;
 
 
-  	// Create the "God Rays" effect (volumetric light scattering)
-  	var godrays = new BABYLON.VolumetricLightScatteringPostProcess('godrays', 1.0, camera, null, 80, BABYLON.Texture.BILINEAR_SAMPLINGMODE, engine, false);
+    var sun=new Sun(camera, scene);
+    sun.position = new BABYLON.Vector3(-2000, 50, 2000);
+    sun.scaling = new BABYLON.Vector3(200, 200, 200);
+   
 
-  	// By default it uses a billboard to render the sun, just apply the desired texture
-  	// position and scale
-  	godrays.mesh.material.diffuseTexture = new BABYLON.Texture('textures/sun.png', scene, true, false, BABYLON.Texture.BILINEAR_SAMPLINGMODE);
-  	godrays.mesh.material.diffuseTexture.hasAlpha = true;
-  	godrays.mesh.position = new BABYLON.Vector3(-2000, 50, 2000);
-  	godrays.mesh.scaling = new BABYLON.Vector3(200, 200, 200);
-
-    /*
-    // Godrays parameters
-    godrays.exposure = 0.4;
-    godrays.decay = 0.96815;
-    godrays.weight = 0.358767;
-    godrays.density = 0.9526;
-    */
-
-    light.position = godrays.mesh.position;
-
-
-  	// Create earth
-  	var earthMaterial = new BABYLON.StandardMaterial("earth", scene);
-  	//var earthMaterial = new BABYLON.CubeTexture("earth", scene);
-  	earthMaterial.diffuseTexture = new BABYLON.Texture("textures/earth1.jpg", scene);
-    //earthMaterial.bumpTexture = new BABYLON.Texture("textures/earthbump.jpg", scene);
-    earthMaterial.specularTexture = new BABYLON.Texture("textures/earthspec2.jpg", scene);
-    earthMaterial.emissiveTexture = new BABYLON.Texture("textures/earthlights2.jpg", scene);
-    earthMaterial.specularPower = 100; 
-
-
-    var earth = BABYLON.Mesh.CreateSphere("sphere", 100.0, 1500.0, scene);
-    earth.material=earthMaterial;
-    earth.position=new BABYLON.Vector3(0,-1000,0)
-    earth.rotation.x=Math.PI;
-
-
-    // Earth rotation
-    scene.actionManager.registerAction(new BABYLON.IncrementValueAction(BABYLON.ActionManager.OnEveryFrameTrigger, earth, "rotation.y", 0.0002));
-
-    var atmosphere = BABYLON.Mesh.CreateSphere("atmosphere", 100.0, 1505.0, scene);
-    var atmosphereMaterial = new BABYLON.StandardMaterial("atmosphere", scene);
-    atmosphereMaterial.diffuseColor = new BABYLON.Color3(0.4,0.4,1);
-    //atmosphereMaterial.emissiveColor = new BABYLON.Color3(0,0,0.3);
-    //atmosphereMaterial.ambientColor = new BABYLON.Color3(0,0,1);
-    atmosphereMaterial.specularColor = new BABYLON.Color3(0.1, 0.1, 0.6);
-    atmosphereMaterial.alpha = 0.1;
-    atmosphereMaterial.specularPower = 2;
-    atmosphere.material = atmosphereMaterial;
-    atmosphere.position = earth.position;
-
-    atmosphereMaterial.opacityFresnelParameters = new BABYLON.FresnelParameters();
-    atmosphereMaterial.opacityFresnelParameters.bias = 0.4;
-    atmosphereMaterial.opacityFresnelParameters.power = 1;
-    atmosphereMaterial.opacityFresnelParameters.rightColor = BABYLON.Color3.Black();
-    atmosphereMaterial.opacityFresnelParameters.leftColor = BABYLON.Color3.White();
-
-    var light0 = new BABYLON.HemisphericLight("ambilight", new BABYLON.Vector3(0, 1, 0), scene);
-    light0.diffuse = new BABYLON.Color3(0.1, 0.1, 0.1);
-    light0.specular = new BABYLON.Color3(0, 0, 0);
-    light0.groundColor = new BABYLON.Color3(0, 0, 0);
-    light0.position = new BABYLON.Vector3(0,0,0);
-    //godrays.mesh.position;
+    var earth=new Earth(5500.0, scene);
+    earth.position=new BABYLON.Vector3(0,-5000,0)
 
 
   	// Create dynamic stars
@@ -357,4 +291,42 @@ window.onload = function() {
 	});
 }
 
+<<<<<<< HEAD
 console.log("loaded main.js");
+=======
+function Sun(camera, scene){
+  // Sun
+
+  // Create the "God Rays" effect (volumetric light scattering)
+  var godrays = new BABYLON.VolumetricLightScatteringPostProcess('godrays', 1.0, camera, null, 80, BABYLON.Texture.BILINEAR_SAMPLINGMODE, scene.getEngine(), false);
+
+  // By default it uses a billboard to render the sun, just apply the desired texture
+  // position and scale
+  godrays.mesh.material.diffuseTexture = new BABYLON.Texture('textures/sun.png', scene, true, false, BABYLON.Texture.BILINEAR_SAMPLINGMODE);
+  godrays.mesh.material.diffuseTexture.hasAlpha = true;
+
+  /*
+  // Godrays parameters
+  godrays.exposure = 0.4;
+  godrays.decay = 0.96815;
+  godrays.weight = 0.358767;
+  godrays.density = 0.9526;
+  */ 
+
+  var light = new BABYLON.PointLight("Omni", new BABYLON.Vector3(10, 50, 50), scene);
+  //light.position = godrays.mesh.position;
+  light.parent=godrays.mesh;
+
+
+  var ambiLight = new BABYLON.HemisphericLight("ambilight", new BABYLON.Vector3(0, 1, 0), scene);
+  ambiLight.diffuse = new BABYLON.Color3(0.1, 0.1, 0.1);
+  ambiLight.specular = new BABYLON.Color3(0, 0, 0);
+  ambiLight.groundColor = new BABYLON.Color3(0, 0, 0);
+  ambiLight.position = new BABYLON.Vector3(0,0,0); 
+
+  ambiLight.parent=godrays.mesh;
+
+  return godrays.mesh;
+}
+   
+>>>>>>> origin/master
