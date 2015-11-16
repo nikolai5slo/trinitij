@@ -1,9 +1,9 @@
-function AsteoridLoader(scene){		//razred, ki naloži potrebne elemente razreda Asteroid
-	this.mesh = null;				//ogrodje objekta, ki je enako vsem (da se samo 1x naloži)
-	this.material = null;			//material, ki je enak vsem (da se samo 1x naloži)
+function AsteoridLoader(){		//razred, ki naloži potrebne elemente razreda Asteroid
+	this.mesh = null;			//ogrodje objekta, ki je enako vsem (da se samo 1x naloži)
+	this.material = null;		//material, ki je enak vsem (da se samo 1x naloži)
 	
 	//preberemo in shranimo ogrodje
-	this.initializeLoader() = function(mesh, material){
+	this.initializeLoader() = function(mesh, material, scene){
 		BABYLON.SceneLoader.ImportMesh("Asteroid", "obj/", "asteroid1.babylon", scene, function(objectMesh, particleSystems){
 			mesh = objectMesh[0];			//naložimo mesh
 			console.log(mesh);
@@ -46,3 +46,5 @@ function Asteroid(){										//razred Asteroid
 		);
 	}
 };
+
+console.log("loaded asteroid.js");

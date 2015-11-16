@@ -1,6 +1,19 @@
-var FUCKER;
+var ST_NASPROTNIKOV;
+var TIRNITIJ_DEF_POS;
+var NASPROTNIK_START_DIST;
+var NASPROTNIK_DEATH_DIST;
 
-window.onload = function(){
+document.onload = function() {
+	ST_NASPROTNIKOV = 15;
+	TIRNITIJ_DEF_POS = [0, 0, 250];
+	NASPROTNIK_START_DIST = 750;
+	NASPROTNIK_DEATH_DIST = 500;
+}
+window.onload = function() {
+	var igralec;
+	var trinitij;
+	var nasprotniki = [];
+	
 	//Shranimo referenco na kanvas
 	var canvas = document.querySelector("#canvas");
 
@@ -165,27 +178,26 @@ window.onload = function(){
       SPS.refreshVisibleSize();  
       SPS.computeParticleVertex = false;
     });
-
-	var igralec = new Igralec(scene);
-	BABYLON.SceneLoader.ImportMesh("Igralec", "obj/", "Igralec.babylon", scene, 
-			function(objectMeshes){
-				FUCKER = objectMeshes[0].createInstance("igralec");	//ustvari novo instanco objekta z danim id-jem
-			}
-		);
-	igralec.instanca = FUCKER;
-	//igralec.instanca = "MADAFAKER";	//deluje in spremeni instanco
-	console.log(igralec);
 	
-    var asteroids= [];
-	/*loader = new AsteoridLoader(scene);
-	//console.log(loader);
-	//console.log(loader.mesh);
-	//console.log(loader.material);
-	for (var index = 0; index < 200; index++) {
-		var tmpAster = new Asteroid();
-		tmpAster.createAsteroid(loader, index);
-		asteroids.push(tmpAster);
-	}*/
+	/*********************
+		KREACIJA LIKOV
+	**********************/
+	
+	igralec = new Igralec();					//ustvarimo novega igralca
+	igralec.create(igralec.instanca, scene);	//kreiramo njegov objekt in ga dodamo v sceno
+	trinitij = new Trinitij();					//ustvarimo ladjo trinitij
+	trinitij.create(trinitij.instanca, scene);	//kreiramo njen objekt in jo dodamo v sceno
+	console.log(ST_NASPROTNIKOV);
+	for(i = 0; i < ST_NASPROTNIKOV; i++){		//za N nasprotnikov
+		var tmp = new Nasprotnik();					//ustvarimo novega nasprotnika
+		tmp.create(tmp.instanca, scene);		//kreiramo njegov objekt in ga dodamo v sceno
+		nasprotniki.push();						//shranimo ga v tabelo nasprotnikov
+	}
+	
+	/**************************
+		KREACIJA ASTEROIDOV
+	**************************/
+    var asteroids = [];
 	
     asteroidMaterial = null;
     BABYLON.SceneLoader.ImportMesh("Asteroid", "obj/", "asteroid1.babylon", scene, function (m, particleSystems) {
@@ -216,13 +228,13 @@ window.onload = function(){
 
         }
     });
-	console.log(asteroidMaterial);	//TO FAKING NE DELA KOT BI MORALO!!!! Je null
+	//console.log(asteroidMaterial);	//TO FAKING NE DELA KOT BI MORALO!!!! Je null
 
     scene.registerBeforeRender(function() {
       asteroids.forEach(function(ast){
           //ast.translate(BABYLON.Axis.X, 200, BABYLON.Space.WORLD);
         if(ast.position.z>6000){
-          console.log("translate");
+          //console.log("translate");
           ast.setPhysicsState(BABYLON.PhysicsEngine.NoImpostor);
           ast.position.z=-500;
           //ast.setOrientation(0,0,0);
@@ -327,7 +339,16 @@ window.onload = function(){
 
 	// Register a render loop to repeatedly render the scene
 	engine.runRenderLoop(function () {
-		scene.render();
+		var TIME_SPENT = Math.floor((((new Date().getTime()) - TIME) / 1000));
+		if(TIME_TILL_END > TIME_SPENT) {
+			scene.render();
+			//izrisati je treba še števec časa
+		}
+		//TODO else izpiši da je zmagal
+		
+		/*if((Math.floor(TIME_SPENT) % 60) == 0) {
+			console.log(TIME_SPENT);
+		}*/
 	});
 
 	// Watch for browser/canvas resize events
@@ -335,3 +356,5 @@ window.onload = function(){
 		engine.resize();
 	});
 }
+
+console.log("loaded main.js");
