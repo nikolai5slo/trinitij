@@ -1,5 +1,10 @@
 var FUCKER;
 
+
+function randomNumber(min,max){
+  return (Math.random()*(max-min))+min;
+}
+
 window.onload = function(){
 	//Shranimo referenco na kanvas
 	var canvas = document.querySelector("#canvas");

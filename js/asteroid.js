@@ -1,20 +1,27 @@
 function AsteoridNest(scene){
-	var that=this;
+    var bBox= BABYLON.Mesh.CreateBox("bBox", 700, scene);
+    bBox.visibility=0;
+
+    var vecWorld = bBox.getBoundingInfo().boundingBox.vectorsWorld;
+
+    var minEmitBox=vecWorld[0];
+    var maxEmitBox=vecWorld[1];
+
 
 	// Create asteorid mist with particle system
-    var fountain= BABYLON.Mesh.CreateBox("fountain", 0.1, scene);
-    fountain.visibility=0;
     var particleSystem = new BABYLON.ParticleSystem("particles", 30000, scene);
 
-    fountain.position.y=0;
-    fountain.position.x=0;
-    fountain.position.z=0;
+    bBox.position.y=0;
+    bBox.position.x=0;
+    bBox.position.z=0;
 
     particleSystem.particleTexture = new BABYLON.Texture("textures/flare.png", scene);
     particleSystem.emitRate = 1000;
-    particleSystem.emitter = fountain;
-    particleSystem.minEmitBox = new BABYLON.Vector3(700, -700, 700); // Starting all From
-    particleSystem.maxEmitBox = new BABYLON.Vector3(-700, 700, -700); // To...
+    particleSystem.emitter = bBox;
+    //particleSystem.minEmitBox = new BABYLON.Vector3(700, -700, 700); // Starting all From
+    particleSystem.minEmitBox = minEmitBox; 
+    //particleSystem.maxEmitBox = new BABYLON.Vector3(-700, 700, -700); // To...
+    particleSystem.maxEmitBox = maxEmitBox;
     particleSystem.minSize = 0.3;
     particleSystem.maxSize = 1;
     particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
@@ -71,7 +78,7 @@ function AsteoridNest(scene){
     // Create object for asteroids
     var sphere = BABYLON.MeshBuilder.CreateSphere("s", {diameter: 6, segments: 3}, scene);
     // Add objects to SPS and transform it with myVertexFunction
-    SPS.addShape(sphere, 200, {vertexFunction: myVertexFunction});
+    SPS.addShape(sphere, 500, {vertexFunction: myVertexFunction});
     var mesh = SPS.buildMesh();
     mesh.position.z=0;
     mesh.material = mat;
@@ -83,9 +90,12 @@ function AsteoridNest(scene){
       // just recycle everything
       for (var p = 0; p < this.nbParticles; p++) {
         this.recycleParticle(this.particles[p]);
-        this.particles[p].position.x = Math.random() * 200 - 100;
-        this.particles[p].position.y = Math.random() * 200 - 100;
-        this.particles[p].position.z = Math.random() * 1200 -500;
+
+
+        this.particles[p].position.x = randomNumber(minEmitBox.x, maxEmitBox.x);
+        this.particles[p].position.y = randomNumber(minEmitBox.y, maxEmitBox.y);
+        this.particles[p].position.z = randomNumber(minEmitBox.z, maxEmitBox.z);
+    	
       }
     };
 
@@ -98,25 +108,30 @@ function AsteoridNest(scene){
       particle.scale.x = scaleX;
       particle.scale.y = scaleY;
       particle.scale.z = scaleZ;
-      particle.position.x = Math.random() * 200 - 100;
-      particle.position.y = Math.random() * 200 - 100;
-      particle.position.z = -500;
+
+	  particle.position.x = randomNumber(minEmitBox.x, maxEmitBox.x);
+      particle.position.y = randomNumber(minEmitBox.y, maxEmitBox.y);
+      particle.position.z = minEmitBox.z;
+
+
       particle.rotation.x = Math.random() * 3.5;
       particle.rotation.y = Math.random() * 3.5;
       particle.rotation.z = Math.random() * 3.5;
+
+
       grey = 1.0 - Math.random() * 0.3;
       particle.color = new BABYLON.Color4(grey, grey, grey, 1);
 
       particle.velocity.z =  Math.random() * 2;
-      particle.velocity.x =  Math.random()/2 - 0.25;
-      particle.velocity.y =  Math.random()/2 - 0.25;
+      //particle.velocity.x =  Math.random()/2 - 0.25;
+      //particle.velocity.y =  Math.random()/2 - 0.25;
     };
 
 
     // update : will be called by setParticles()
     SPS.updateParticle = function(particle) {  
       // some physics here 
-      if (particle.position.z > 800) {
+      if (particle.position.z > maxEmitBox.z) {
         this.recycleParticle(particle);
       }
       //particle.velocity.y += gravity;                         // apply gravity to y
@@ -158,16 +173,18 @@ function AsteoridNest(scene){
 	
     asteroidMaterial = null;
     BABYLON.SceneLoader.ImportMesh("Asteroid", "obj/", "asteroid1.babylon", scene, function (m, particleSystems) {
-      for (var index = 0; index < 200; index++) {
+      for (var index = 0; index < 100; index++) {
         var asteroid = m[0].createInstance("i" + index);
         asteroids.push(asteroid);
 
         asteroid.scaling.x*=10+Math.random()*30;
         asteroid.scaling.y*=10+Math.random()*30;
         asteroid.scaling.z*=10+Math.random()*30;
-        asteroid.position.x=Math.random()*2000-1000;
-        asteroid.position.y=Math.random()*2000-1000;
-        asteroid.position.z=Math.random()*6500-500;
+
+        asteroid.position.x = randomNumber(particleSystem.minEmitBox.x, particleSystem.maxEmitBox.x);
+      	asteroid.position.y = randomNumber(particleSystem.minEmitBox.y, particleSystem.maxEmitBox.y);
+      	asteroid.position.z = randomNumber(particleSystem.minEmitBox.z, particleSystem.maxEmitBox.z);
+
         /*asteroid.rotation.x+=Math.random()*2
         asteroid.rotation.y+=Math.random()*2*/
 
@@ -188,9 +205,9 @@ function AsteoridNest(scene){
 
     scene.registerBeforeRender(function() {
       asteroids.forEach(function(ast){
-        if(ast.position.z>6000){
+        if(ast.position.z > maxEmitBox.z){
           ast.setPhysicsState(BABYLON.PhysicsEngine.NoImpostor);
-          ast.position.z=-500;
+          ast.position.z = minEmitBox.z;
           ast.updatePhysicsBodyPosition();
           ast.refreshBoundingInfo();
           ast.setPhysicsState({impostor:BABYLON.PhysicsEngine.SphereImpostor, move:true, mass:1, friction:0.5, restitution:0.5});
