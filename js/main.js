@@ -59,6 +59,7 @@ window.onload = function(){
     skybox.material = skyboxMaterial;
 
 
+
     var sun=new Sun(scene.activeCamera, scene);
     sun.position = new BABYLON.Vector3(-2000, 50, 2000);
     sun.scaling = new BABYLON.Vector3(200, 200, 200);
@@ -66,7 +67,9 @@ window.onload = function(){
 
     var earth=new Earth(5500.0, scene);
     earth.position=new BABYLON.Vector3(5000,-400,6000);
-
+ 
+    skybox.parent=player;
+    sun.parent=player;
 
 
     scene.registerBeforeRender(function() {
