@@ -6,6 +6,19 @@ var centerY = null;
 var mouseX = 0;
 var mouseY = 0;
 var camera = null;
+mvtDirection = [0,0,0,0];
+var KEYBOARD = {
+  W : 87,
+  S : 83,
+  A : 65,
+  D : 68,
+  SPACE : 32,
+  // ARROWS:
+  UP    : 38,
+  DOWN  : 40,
+  LEFT  : 37,
+  RIGHT : 39
+}
 
 function randomNumber(min,max){
 	return (Math.random()*(max-min))+min;
@@ -136,6 +149,13 @@ window.onload = function(){
 				camera.rotation = igralec.instanca.rotation;
 			}
 		}
+
+    if (mvtDirection[0] != 0) {
+        igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), 1, BABYLON.Space.LOCAL);
+    }
+    if (mvtDirection[1] != 0) {
+        igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), -1, BABYLON.Space.LOCAL);
+    } 
 		//TODO else izpiši da je zmagal
 		
 		/*if((Math.floor(TIME_SPENT) % 60) == 0) {
@@ -168,6 +188,39 @@ window.onload = function(){
 			//console.log(igralec.instanca);
 		}
 	});
+
+  /* KEYBOARD */
+  window.addEventListener("keydown", function(evt) {
+    switch (evt.keyCode) {
+        case KEYBOARD.W :
+            mvtDirection[0] = 1;
+            break;
+        case KEYBOARD.S :
+            mvtDirection[1] = 1;
+            break;
+    }
+
+    if(igralec != null && igralec.instanca == null){
+      igralec.instanca = popraviInstance("igralec");
+      //console.log(igralec.instanca);
+    }
+  });
+
+  window.addEventListener("keyup", function(evt) {
+    switch (evt.keyCode) {
+          case KEYBOARD.W :
+              mvtDirection[0] = 0;  // FORWARD
+              break;
+          case KEYBOARD.S :
+              mvtDirection[1] = 0;  // BACKWARD
+              break;
+    }
+
+    if(igralec != null && igralec.instanca == null){
+      igralec.instanca = popraviInstance("igralec");
+      //console.log(igralec.instanca);
+    }
+  });    
 }
 
 console.log("loaded main.js");
