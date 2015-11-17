@@ -6,7 +6,18 @@ var centerY = null;
 var mouseX = 0;
 var mouseY = 0;
 var camera = null;
-mvtDirection = [0,0,0,0];
+//var mvtDirection = [0,0,0,0];
+var mvtDirection = {
+  KEYDOWN : 0,
+  // MOVING
+  FORWARD : 0,
+  BACKWARD : 0,
+  // TURNING
+  UP : 0,
+  DOWN : 0,
+  LEFT : 0,
+  RIGHT : 0
+};
 var KEYBOARD = {
   W : 87,
   S : 83,
@@ -156,12 +167,12 @@ window.onload = function(){
 			}
 		}
 
-    if (mvtDirection[0] != 0) {
+    if (mvtDirection.FORWARD != 0) {
         igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), 1, BABYLON.Space.LOCAL);
-    } else if (mvtDirection[1] != 0) {
+    } else if (mvtDirection.BACKWARD != 0) {
         igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), -1, BABYLON.Space.LOCAL);
-    } else if (TIME_SPENT > 1){
-        igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), 0.1, BABYLON.Space.LOCAL);
+    } else if (TIME_SPENT > 2){
+        igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), 0.05, BABYLON.Space.LOCAL);
     }
 		//TODO else izpiši da je zmagal
 		
@@ -200,11 +211,31 @@ window.onload = function(){
   window.addEventListener("keydown", function(evt) {
     switch (evt.keyCode) {
         case KEYBOARD.W :
-            mvtDirection[0] = 1;
+            //mvtDirection[0] = 1;
+            mvtDirection.FORWARD = 1;
+            mvtDirection.KEYDOWN = 1;
             break;
         case KEYBOARD.S :
-            mvtDirection[1] = 1;
+            //mvtDirection[1] = 1;
+            mvtDirection.BACKWARD = 1;
+            mvtDirection.KEYDOWN = 1;
             break;
+        case KEYBOARD.UP :
+            mvtDirection.UP = 1;
+            mvtDirection.KEYDOWN = 1;
+            break;
+        case KEYBOARD.DOWN :
+            mvtDirection.DOWN = 1;
+            mvtDirection.KEYDOWN = 1;
+            break;
+        case KEYBOARD.LEFT :
+            mvtDirection.LEFT = 1;
+            mvtDirection.KEYDOWN = 1;
+            break;
+        case KEYBOARD.RIGHT :
+            mvtDirection.RIGHT = 1;
+            mvtDirection.KEYDOWN = 1;
+            break; 
     }
 
     if(igralec != null && igralec.instanca == null){
@@ -215,12 +246,32 @@ window.onload = function(){
 
   window.addEventListener("keyup", function(evt) {
     switch (evt.keyCode) {
-          case KEYBOARD.W :
-              mvtDirection[0] = 0;  // FORWARD
-              break;
-          case KEYBOARD.S :
-              mvtDirection[1] = 0;  // BACKWARD
-              break;
+        case KEYBOARD.W :
+            //mvtDirection[0] = 0;  // FORWARD
+            mvtDirection.FORWARD = 0;
+            mvtDirection.KEYDOWN = 0;
+            break;
+        case KEYBOARD.S :
+            //mvtDirection[1] = 0;  // BACKWARD
+            mvtDirection.BACKWARD = 0;
+            mvtDirection.KEYDOWN = 0;
+            break;
+        case KEYBOARD.UP :
+            mvtDirection.UP = 0;
+            mvtDirection.KEYDOWN = 0;
+            break;
+        case KEYBOARD.DOWN :
+            mvtDirection.DOWN = 0;
+            mvtDirection.KEYDOWN = 0;
+            break;
+        case KEYBOARD.LEFT :
+            mvtDirection.LEFT = 0;
+            mvtDirection.KEYDOWN = 0;
+            break;
+        case KEYBOARD.RIGHT :
+            mvtDirection.RIGHT = 0;
+            mvtDirection.KEYDOWN = 0;
+            break; 
     }
 
     if(igralec != null && igralec.instanca == null){
