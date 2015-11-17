@@ -1,5 +1,5 @@
 function AsteroidNest(diameter, scene){
-    var direction=new BABYLON.Vector3(0,0,-4);
+    var direction=new BABYLON.Vector3(0,0,-8);
     var bBox= BABYLON.Mesh.CreateBox("bBox", diameter, scene);
     //bBox.visibility=0;
     bBox.target=null;
@@ -173,17 +173,17 @@ function AsteroidNest(diameter, scene){
 
 
     // Load asteroids from file with physics
-    var asteroids= [];
+    bBox.asteroids= [];
 	
     asteroidMaterial = null;
     BABYLON.SceneLoader.ImportMesh("Asteroid", "obj/", "asteroid1.babylon", scene, function (m, particleSystems) {
-      for (var index = 0; index < 200; index++) {
+      for (var index = 0; index < 300; index++) {
         var asteroid = m[0].createInstance("i" + index);
-        asteroids.push(asteroid);
+        bBox.asteroids.push(asteroid);
 
-        asteroid.scaling.x*=10+Math.random()*50;
-        asteroid.scaling.y*=10+Math.random()*50;
-        asteroid.scaling.z*=10+Math.random()*50;
+        asteroid.scaling.x*=30+Math.random()*100;
+        asteroid.scaling.y*=30+Math.random()*100;
+        asteroid.scaling.z*=30+Math.random()*100;
 
         asteroid.position.x = randomNumber(minEmitBox.x, maxEmitBox.x);
       	asteroid.position.y = randomNumber(minEmitBox.y, maxEmitBox.y);
@@ -210,8 +210,8 @@ function AsteroidNest(diameter, scene){
     });
 
     scene.registerBeforeRender(function() {
-      if(bBox.target != null && bBox.target.player != undefined){
-        fountain.position=bBox.position=bBox.target.player.position;
+      if(bBox.target != null && bBox.target.ship != undefined){
+        fountain.position=bBox.position=bBox.target.ship.position;
 
         minEmitBox=bBox.getBoundingInfo().boundingBox.vectorsWorld[0];
         maxEmitBox=bBox.getBoundingInfo().boundingBox.vectorsWorld[1];
@@ -219,7 +219,7 @@ function AsteroidNest(diameter, scene){
         //particleSystem.minEmitBox = minEmitBox.multiplyByFloats(0.6,0.6,0.8); 
         //particleSystem.maxEmitBox = maxEmitBox.multiplyByFloats(0.6,0.6,0.8);
       }
-      asteroids.forEach(function(ast){
+      bBox.asteroids.forEach(function(ast){
         // Calculate new bbox margins
         //minEmitBox=bBox.getBoundingInfo().boundingBox.vectorsWorld[0];
         //maxEmitBox=bBox.getBoundingInfo().boundingBox.vectorsWorld[1];

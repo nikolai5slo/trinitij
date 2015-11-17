@@ -1,9 +1,3 @@
-/// <reference path="babylon2.2.d.ts" />
-
-var FUCKER;
-
-
-
 function randomNumber(min,max){
   return (Math.random()*(max-min))+min;
 }
@@ -21,7 +15,7 @@ window.onload = function(){
   function createScene() {
     var scene = new BABYLON.Scene(engine);
 
-    scene.debugLayer.show(true);
+    //scene.debugLayer.show(true);
 
     scene.enablePhysics(new BABYLON.Vector3(0,0,0), new BABYLON.OimoJSPlugin());
 
@@ -30,13 +24,21 @@ window.onload = function(){
 
     //camera.attachControl(canvas, true);
 
-    var astNest=AsteroidNest(3000, scene);
-    astNest.scaling.z*=3;
+    var astNest=AsteroidNest(4000, scene);
+    astNest.scaling.z*=6;
 
     var player = new Player(scene);
     astNest.target=player;
     //astNest.parent=player.player;
 
+
+    //scene.fogMode = BABYLON.Scene.FOGMODE_EXP;
+    scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
+    scene.fogDensity = 0.008;
+    scene.fogStart = 800.0;
+    scene.fogEnd = 10000.0;
+
+    scene.fogColor = new BABYLON.Color3(0, 0, 0);
 
     
 
@@ -67,6 +69,15 @@ window.onload = function(){
 
 
 
+    scene.registerBeforeRender(function() {
+      astNest.asteroids.forEach(function(ast){
+        if(player.ship.intersectsMesh(ast, true)){
+          console.log("GAME OVER");
+          engine.stopRenderLoop();
+          document.getElementById("overText").style.display = "block";
+        }
+      });
+    });
 
 
   	// Create dynamic stars
