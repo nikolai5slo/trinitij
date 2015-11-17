@@ -134,17 +134,21 @@ window.addEventListener("mousemove", function(event){
 	
 	if(centerX != null && centerY != null){
 		if(igralec != null && igralec.instanca != null){
-			if(mouseX < centerX - 10){
-				igralec.instanca.rotate(new BABYLON.Vector3(0,1,0), 0.1, BABYLON.Space.LOCAL);
+			if(mouseX < centerX){
+				igralecMesh.rotate(new BABYLON.Vector3(0, 1, 0), 0.03 *
+					Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
 			}
-			if(mouseX > centerX + 10){
-				igralec.instanca.rotate(new BABYLON.Vector3(0,-1,0), 0.1, BABYLON.Space.LOCAL);
+			else if(mouseX > centerX){
+				igralecMesh.rotate(new BABYLON.Vector3(0,-1,0), 0.03 *
+					Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
 			}
-			if(mouseY < centerY - 10){
-				igralec.instanca.rotate(new BABYLON.Vector3(-1,0,0), 0.1, BABYLON.Space.LOCAL);
+			if(mouseY < centerY - 50){
+				igralecMesh.rotate(new BABYLON.Vector3(-1,0,0), 0.03 *
+					Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
 			}
-			if(mouseY > centerY + 10){
-				igralec.instanca.rotate(new BABYLON.Vector3(1,0,0), 0.1, BABYLON.Space.LOCAL);
+			else if(mouseY > centerY + 50){
+				igralecMesh.rotate(new BABYLON.Vector3(1,0,0), 0.03 *
+					Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
 			}
 			//console.log(igralec.instanca.rotate);
 			console.log("roatcija");
