@@ -20,7 +20,7 @@ function Earth(size, scene){
 	var atmosphere = BABYLON.Mesh.CreateSphere("atmosphere", 100.0, size + size*0.005, scene);
 	atmosphere.parent=earth;
 	earth.atmosphere=atmosphere;
-	var atmosphereMaterial = new BABYLON.StandardMaterial("atmosphere", scene);
+	var atmosphereMaterial = new BABYLON.StandardMaterial("atmosphereMat", scene);
 	atmosphereMaterial.diffuseColor = new BABYLON.Color3(0.4,0.4,1);
 	//atmosphereMaterial.emissiveColor = new BABYLON.Color3(0,0,0.3);
 	//atmosphereMaterial.ambientColor = new BABYLON.Color3(0,0,1);

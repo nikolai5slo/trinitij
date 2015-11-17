@@ -30,18 +30,19 @@ window.onload = function(){
 
     //camera.attachControl(canvas, true);
 
-    var astNest=AsteoridNest(1000, scene);
-    astNest.scaling.z*=20;
+    var astNest=AsteroidNest(3000, scene);
+    astNest.scaling.z*=3;
 
     var player = new Player(scene);
-    //astNest.target=player;
+    astNest.target=player;
+    //astNest.parent=player.player;
 
 
     
 
 
     // Skybox
-    var skybox = BABYLON.Mesh.CreateBox("skyBox", 9000.0, scene);
+    var skybox = BABYLON.Mesh.CreateBox("skyBox", 15000.0, scene);
 
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
@@ -62,7 +63,7 @@ window.onload = function(){
    
 
     var earth=new Earth(5500.0, scene);
-    earth.position=new BABYLON.Vector3(3000,-400,6000);
+    earth.position=new BABYLON.Vector3(5000,-400,6000);
 
 
 
