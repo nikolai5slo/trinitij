@@ -1,27 +1,28 @@
-function AsteoridNest(scene){
-    var bBox= BABYLON.Mesh.CreateBox("bBox", 700, scene);
+function AsteoridNest(diameter, scene){
+    var bBox= BABYLON.Mesh.CreateBox("bBox", diameter, scene);
     bBox.visibility=0;
+    bBox.target=null;
 
-    var vecWorld = bBox.getBoundingInfo().boundingBox.vectorsWorld;
-
-    var minEmitBox=vecWorld[0];
-    var maxEmitBox=vecWorld[1];
+    var minEmitBox=bBox.getBoundingInfo().boundingBox.vectorsWorld[0];
+    var maxEmitBox=bBox.getBoundingInfo().boundingBox.vectorsWorld[1];
 
 
 	// Create asteorid mist with particle system
+    var fountain=new BABYLON.Mesh.CreateBox("fountain",0.1,scene);
+    fountain.visibility=0;
     var particleSystem = new BABYLON.ParticleSystem("particles", 30000, scene);
 
-    bBox.position.y=0;
-    bBox.position.x=0;
-    bBox.position.z=0;
+    fountain.position.y=0;
+    fountain.position.x=0;
+    fountain.position.z=0;
 
     particleSystem.particleTexture = new BABYLON.Texture("textures/flare.png", scene);
     particleSystem.emitRate = 1000;
-    particleSystem.emitter = bBox;
-    //particleSystem.minEmitBox = new BABYLON.Vector3(700, -700, 700); // Starting all From
-    particleSystem.minEmitBox = minEmitBox; 
-    //particleSystem.maxEmitBox = new BABYLON.Vector3(-700, 700, -700); // To...
-    particleSystem.maxEmitBox = maxEmitBox;
+    particleSystem.emitter = fountain;
+    //particleSystem.minEmitBox = new BABYLON.Vector3(70, -70, 70); // Starting all From
+    particleSystem.minEmitBox = minEmitBox.multiplyByFloats(0.6,0.6,0.8); 
+    //particleSystem.maxEmitBox = new BABYLON.Vector3(-70, 70, -70); // To...
+    particleSystem.maxEmitBox = maxEmitBox.multiplyByFloats(0.6,0.6,0.8);
     particleSystem.minSize = 0.3;
     particleSystem.maxSize = 1;
     particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
@@ -32,7 +33,7 @@ function AsteoridNest(scene){
     particleSystem.color2 = new BABYLON.Color4(0, 0, 0, 0);
     particleSystem.colorDead = new BABYLON.Color4(1, 1, 1, 1);
     
-    particleSystem.maxLifeTime = 90;
+    particleSystem.maxLifeTime = 50;
     
     particleSystem.gravity = new BABYLON.Vector3(0, 0, 1);
     particleSystem.direction1 = new BABYLON.Vector3(-1, -1, -1);
@@ -109,7 +110,7 @@ function AsteoridNest(scene){
       particle.scale.y = scaleY;
       particle.scale.z = scaleZ;
 
-	  particle.position.x = randomNumber(minEmitBox.x, maxEmitBox.x);
+	    particle.position.x = randomNumber(minEmitBox.x, maxEmitBox.x);
       particle.position.y = randomNumber(minEmitBox.y, maxEmitBox.y);
       particle.position.z = minEmitBox.z;
 
@@ -131,7 +132,8 @@ function AsteoridNest(scene){
     // update : will be called by setParticles()
     SPS.updateParticle = function(particle) {  
       // some physics here 
-      if (particle.position.z > maxEmitBox.z) {
+      if(!bBox.intersectsPoint(particle.position)){
+      //if (particle.position.z > maxEmitBox.z || particle.position.z < minEmitBox) {
         this.recycleParticle(particle);
       }
       //particle.velocity.y += gravity;                         // apply gravity to y
@@ -181,9 +183,9 @@ function AsteoridNest(scene){
         asteroid.scaling.y*=10+Math.random()*30;
         asteroid.scaling.z*=10+Math.random()*30;
 
-        asteroid.position.x = randomNumber(particleSystem.minEmitBox.x, particleSystem.maxEmitBox.x);
-      	asteroid.position.y = randomNumber(particleSystem.minEmitBox.y, particleSystem.maxEmitBox.y);
-      	asteroid.position.z = randomNumber(particleSystem.minEmitBox.z, particleSystem.maxEmitBox.z);
+        asteroid.position.x = randomNumber(minEmitBox.x, maxEmitBox.x);
+      	asteroid.position.y = randomNumber(minEmitBox.y, maxEmitBox.y);
+      	asteroid.position.z = randomNumber(minEmitBox.z, maxEmitBox.z);
 
         /*asteroid.rotation.x+=Math.random()*2
         asteroid.rotation.y+=Math.random()*2*/
@@ -198,25 +200,46 @@ function AsteoridNest(scene){
 
 
         asteroid.setPhysicsState({impostor:BABYLON.PhysicsEngine.SphereImpostor, move:true, mass:1, friction:0.5, restitution:0.5});
-        asteroid.applyImpulse(new BABYLON.Vector3(Math.random()*10-5,Math.random()*10-5,Math.random()*5+5), asteroid.position);
+        //asteroid.applyImpulse(new BABYLON.Vector3(Math.random()*10-5,Math.random()*10-5,Math.random()*5+5), asteroid.position);
+        asteroid.applyImpulse(new BABYLON.Vector3(Math.random()*10-5,Math.random()*10-5,Math.random()*20+5), asteroid.position);
 
         }
     });
 
     scene.registerBeforeRender(function() {
+      if(bBox.target != null){
+        bBox.position=bBox.target.position;
+
+        minEmitBox=bBox.getBoundingInfo().boundingBox.vectorsWorld[0];
+        maxEmitBox=bBox.getBoundingInfo().boundingBox.vectorsWorld[1];
+
+        particleSystem.minEmitBox = minEmitBox.multiplyByFloats(0.6,0.6,0.8); 
+        //particleSystem.maxEmitBox = new BABYLON.Vector3(-70, 70, -70); // To...
+        particleSystem.maxEmitBox = maxEmitBox.multiplyByFloats(0.6,0.6,0.8);
+      }
       asteroids.forEach(function(ast){
-        if(ast.position.z > maxEmitBox.z){
+        // Calculate new bbox margins
+        //minEmitBox=bBox.getBoundingInfo().boundingBox.vectorsWorld[0];
+        //maxEmitBox=bBox.getBoundingInfo().boundingBox.vectorsWorld[1];
+
+        //particleSystem.minEmitBox = minEmitBox; 
+        //particleSystem.maxEmitBox = new BABYLON.Vector3(-700, 700, -700); // To...
+        //particleSystem.maxEmitBox = maxEmitBox;
+
+        ast.applyImpulse(new BABYLON.Vector3(0,0,0.3), ast.position);
+        //if(ast.position.z > maxEmitBox.z){
+        if(!bBox.intersectsPoint(ast.position)){
           ast.setPhysicsState(BABYLON.PhysicsEngine.NoImpostor);
-          ast.position.z = minEmitBox.z;
+          ast.position.z = minEmitBox.z+10;
           ast.updatePhysicsBodyPosition();
           ast.refreshBoundingInfo();
           ast.setPhysicsState({impostor:BABYLON.PhysicsEngine.SphereImpostor, move:true, mass:1, friction:0.5, restitution:0.5});
-          //ast.applyImpulse(new BABYLON.Vector3(Math.random()*10-5,Math.random()*10-5,Math.random()*5+5), ast.position);
+          //ast.applyImpulse(new BABYLON.Vector3(Math.random()*10-5,Math.random()*10-5,Math.random()*20+5), ast.position);
         }
       });
     });
 
-
+    return bBox;
 }
 
 /*

@@ -1,4 +1,7 @@
+/// <reference path="babylon2.2.d.ts" />
+
 var FUCKER;
+
 
 
 function randomNumber(min,max){
@@ -6,41 +9,36 @@ function randomNumber(min,max){
 }
 
 window.onload = function(){
+
+
 	//Shranimo referenco na kanvas
 	var canvas = document.querySelector("#canvas");
 
 	//naložimo kanvas v babylonov izris
 	var engine = new BABYLON.Engine(canvas, true);
 
-  
 
   function createScene() {
-	 var loader = null;
     var scene = new BABYLON.Scene(engine);
-    scene.enablePhysics(new BABYLON.Vector3(0,0,3), new BABYLON.OimoJSPlugin());
+
+    scene.debugLayer.show(true);
+
+    scene.enablePhysics(new BABYLON.Vector3(0,0,0), new BABYLON.OimoJSPlugin());
 
     scene.actionManager = new BABYLON.ActionManager(scene);
 
-    var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
 
-    camera.attachControl(canvas, true);
+    //camera.attachControl(canvas, true);
 
+    var astNest=AsteoridNest(1000, scene);
+    astNest.scaling.z*=20;
 
-    var astNest=AsteoridNest(scene);
+    var player = new Player(scene);
+    //astNest.target=player;
+
 
     
 
-	var igralec = new Igralec(scene);
-	BABYLON.SceneLoader.ImportMesh("Igralec", "obj/", "Igralec.babylon", scene, 
-			function(objectMeshes){
-				FUCKER = objectMeshes[0].createInstance("igralec");	//ustvari novo instanco objekta z danim id-jem
-			}
-		);
-	igralec.instanca = FUCKER;
-	//igralec.instanca = "MADAFAKER";	//deluje in spremeni instanco
-	console.log(igralec);
-	
-    
 
     // Skybox
     var skybox = BABYLON.Mesh.CreateBox("skyBox", 9000.0, scene);
@@ -58,13 +56,16 @@ window.onload = function(){
     skybox.material = skyboxMaterial;
 
 
-    var sun=new Sun(camera, scene);
+    var sun=new Sun(scene.activeCamera, scene);
     sun.position = new BABYLON.Vector3(-2000, 50, 2000);
     sun.scaling = new BABYLON.Vector3(200, 200, 200);
    
 
     var earth=new Earth(5500.0, scene);
-    earth.position=new BABYLON.Vector3(0,-5000,0)
+    earth.position=new BABYLON.Vector3(3000,-400,6000);
+
+
+
 
 
   	// Create dynamic stars
