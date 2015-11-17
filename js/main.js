@@ -18,7 +18,8 @@ var KEYBOARD = {
   DOWN  : 40,
   LEFT  : 37,
   RIGHT : 39
-}
+};
+var mouseOnScreen = false;
 
 function randomNumber(min,max){
 	return (Math.random()*(max-min))+min;
@@ -121,7 +122,10 @@ window.onload = function(){
 		if(TIME_TILL_END > TIME_SPENT) {
 			scene.render();
 			//izrisati je treba še števec časa
-		}
+		} else {
+      console.log("GAME OVER");
+    }
+
 		if(centerX == null & centerY == null){
 			centerX = window.innerWidth/2;
 			centerY = window.innerHeight/2;
@@ -130,23 +134,25 @@ window.onload = function(){
 		}
 		if(centerX != null && centerY != null){
 			if(igralec != null && igralec.instanca != null){
-				if(mouseX < centerX){
-					igralec.instanca.rotate(new BABYLON.Vector3(0, 1, 0), 0.03 *
-						Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
-				}
-				else if(mouseX > centerX){
-					igralec.instanca.rotate(new BABYLON.Vector3(0,-1,0), 0.03 *
-						Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
-				}
-				if(mouseY < centerY - 50){
-					igralec.instanca.rotate(new BABYLON.Vector3(-1,0,0), 0.03 *
-						Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
-				}
-				else if(mouseY > centerY + 50){
-					igralec.instanca.rotate(new BABYLON.Vector3(1,0,0), 0.03 *
-						Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
-				}
-				camera.rotation = igralec.instanca.rotation;
+        if (mouseOnScreen) {
+  				if(mouseX < centerX){
+  					igralec.instanca.rotate(new BABYLON.Vector3(0, 1, 0), 0.03 *
+  						Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
+  				}
+  				else if(mouseX > centerX){
+  					igralec.instanca.rotate(new BABYLON.Vector3(0,-1,0), 0.03 *
+  						Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
+  				}
+  				if(mouseY < centerY - 50){
+  					igralec.instanca.rotate(new BABYLON.Vector3(-1,0,0), 0.03 *
+  						Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
+  				}
+  				else if(mouseY > centerY + 50){
+  					igralec.instanca.rotate(new BABYLON.Vector3(1,0,0), 0.03 *
+  						Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
+  				}
+  				camera.rotation = igralec.instanca.rotation;
+        }
 			}
 		}
 
@@ -220,7 +226,14 @@ window.onload = function(){
       igralec.instanca = popraviInstance("igralec");
       //console.log(igralec.instanca);
     }
-  });    
+  }); 
+
+  canvas.addEventListener("mouseover", function(){
+      mouseOnScreen = true;
+  });   
+  canvas.addEventListener("mouseout", function(){
+      mouseOnScreen = false;
+  });  
 }
 
 console.log("loaded main.js");
