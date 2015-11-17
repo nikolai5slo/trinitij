@@ -26,7 +26,7 @@ function Player(scene){
 	BABYLON.SceneLoader.ImportMesh("Igralec", "obj/", "Igralec.babylon", scene, function(meshes){
 		var player=meshes[0];
 		player.rotation.x=0;
-		player.rotation.y=0;
+		player.rotation.y=Math.PI;
 		player.rotation.z=0;
 		point.ship = player;
         //player.setPhysicsState({impostor:BABYLON.PhysicsEngine.CubeImpostor, move:true, mass:1, friction:0.5, restitution:0.5});
