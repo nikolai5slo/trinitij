@@ -14,16 +14,25 @@ window.onload = function(){
 	var engine = new BABYLON.Engine(canvas, true);
 
 	function createScene(){
+		/****************************
+			OSNOVNA KONFIGURACIJA
+		****************************/
+		
 		var loader = null;
 		var scene = new BABYLON.Scene(engine);
 		scene.enablePhysics(new BABYLON.Vector3(0,0,3), new BABYLON.OimoJSPlugin());
 	
 		scene.actionManager = new BABYLON.ActionManager(scene);
 	
-		var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+		//var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+		//camera.attachControl(canvas, true);
 		
-		camera.attachControl(canvas, true);
-
+		var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -30), scene);
+		
+		/**********************
+		????KREACIJA MEGLIC????
+		**********************/
+		
 		// Create paticle system
 		//createParticleMist(scene);
 		
@@ -31,22 +40,26 @@ window.onload = function(){
 			KREACIJA LIKOV
 		**********************/
 		
-		igralec = new Igralec();					//ustvarimo novega igralca
-		igralec.create(igralec.instanca, scene);	//kreiramo njegov objekt in ga dodamo v sceno
+		igralec = new Igralec();							//ustvarimo novega igralca
+		igralec.create(igralec.instanca, scene, camera);	//kreiramo njegov objekt in ga dodamo v sceno
+		
 		trinitij = new Trinitij();					//ustvarimo ladjo trinitij
 		trinitij.create(trinitij.instanca, scene);	//kreiramo njen objekt in jo dodamo v sceno
-		console.log(ST_NASPROTNIKOV);
+		
 		for(i = 0; i < ST_NASPROTNIKOV; i++){		//za N nasprotnikov
-			var tmp = new Nasprotnik();					//ustvarimo novega nasprotnika
-			tmp.create(tmp.instanca, scene);		//kreiramo njegov objekt in ga dodamo v sceno
-			nasprotniki.push();						//shranimo ga v tabelo nasprotnikov
+			var tmp = new Nasprotnik();				//ustvarimo novega nasprotnika
+			tmp.create(tmp.instanca, i+1, scene);	//kreiramo njegov objekt in ga dodamo v sceno
+			nasprotniki.push(tmp);					//shranimo ga v tabelo nasprotnikov
 		}
 		
 		/**************************
 			KREACIJA ASTEROIDOV
 		**************************/
-		var astNest=AsteoridNest(scene);
+		//var astNest=AsteoridNest(scene);
 
+		/***********************
+			KREACIJA SKYBOXA
+		***********************/
 		// Skybox
 		var skybox = BABYLON.Mesh.CreateBox("skyBox", 9000.0, scene);
 
@@ -61,13 +74,19 @@ window.onload = function(){
 		skybox.renderingGroupId = 0;
 
 		skybox.material = skyboxMaterial;
-
-
+		
+		/*********************
+			KREACIJA SONCA
+		*********************/
+		
 		var sun=new Sun(camera, scene);
 		sun.position = new BABYLON.Vector3(-2000, 50, 2000);
 		sun.scaling = new BABYLON.Vector3(200, 200, 200);
-	   
-
+		
+		/**********************
+			KREACIJA ZEMLJE
+		**********************/
+		
 		var earth=new Earth(5500.0, scene);
 		earth.position=new BABYLON.Vector3(0,-5000,0)
 
@@ -101,6 +120,7 @@ window.onload = function(){
 
 console.log("loaded main.js");
 
+//OPOMBA: Dodaj sonce v svoj file.js
 function Sun(camera, scene){
 	// Sun
 

@@ -13,6 +13,11 @@ function Trinitij(){
 				instanca.position.x = TIRNITIJ_DEF_POS[0];
 				instanca.position.y = TIRNITIJ_DEF_POS[1];
 				instanca.position.z = TIRNITIJ_DEF_POS[2];
+				
+				//ker izriše in shrani še objectMeshes[0] na default poziciji (0,0,0)
+				objectMeshes[0].position.x = -99999;
+				objectMeshes[0].position.y = -99999;
+				objectMeshes[0].position.z = -99999;
 			}
 		);
 	}
