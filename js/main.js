@@ -158,10 +158,11 @@ window.onload = function(){
 
     if (mvtDirection[0] != 0) {
         igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), 1, BABYLON.Space.LOCAL);
-    }
-    if (mvtDirection[1] != 0) {
+    } else if (mvtDirection[1] != 0) {
         igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), -1, BABYLON.Space.LOCAL);
-    } 
+    } else if (TIME_SPENT > 1){
+        igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), 0.1, BABYLON.Space.LOCAL);
+    }
 		//TODO else izpiši da je zmagal
 		
 		/*if((Math.floor(TIME_SPENT) % 60) == 0) {
