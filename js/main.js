@@ -1,6 +1,8 @@
-var igralec;
-var trinitij;
+var igralec = null;
+var trinitij = null;
 var nasprotniki = [];
+var centerX = null;
+var centerY = null;
 
 function randomNumber(min,max){
 	return (Math.random()*(max-min))+min;
@@ -27,7 +29,7 @@ window.onload = function(){
 		//var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
 		//camera.attachControl(canvas, true);
 		
-		var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -30), scene);
+		var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 15, -50), scene);
 		
 		/**********************
 		????KREACIJA MEGLIC????
@@ -105,6 +107,10 @@ window.onload = function(){
 			scene.render();
 			//izrisati je treba še števec časa
 		}
+		if(centerX == null & centerY == null){
+			centerX = window.innerWidth/2;
+			centerY = window.innerHeight/2;
+		}
 		//TODO else izpiši da je zmagal
 		
 		/*if((Math.floor(TIME_SPENT) % 60) == 0) {
@@ -115,8 +121,39 @@ window.onload = function(){
 	// Watch for browser/canvas resize events
 	window.addEventListener("resize", function () {
 		engine.resize();
+		centerX = window.innerWidth/2;
+		centerY = window.innerHeight/2;
 	});
 }
+
+
+
+window.addEventListener("mousemove", function(event){
+	var mouseX = event.clientX;
+	var mouseY = event.clientY;
+	
+	if(centerX != null && centerY != null){
+		if(igralec != null && igralec.instanca != null){
+			if(mouseX < centerX - 10){
+				igralec.instanca.rotate(new BABYLON.Vector3(0,1,0), 0.1, BABYLON.Space.LOCAL);
+			}
+			if(mouseX > centerX + 10){
+				igralec.instanca.rotate(new BABYLON.Vector3(0,-1,0), 0.1, BABYLON.Space.LOCAL);
+			}
+			if(mouseY < centerY - 10){
+				igralec.instanca.rotate(new BABYLON.Vector3(-1,0,0), 0.1, BABYLON.Space.LOCAL);
+			}
+			if(mouseY > centerY + 10){
+				igralec.instanca.rotate(new BABYLON.Vector3(1,0,0), 0.1, BABYLON.Space.LOCAL);
+			}
+			//console.log(igralec.instanca.rotate);
+			console.log("roatcija");
+		}
+		//console.log(igralec);
+		console.log(igralec.instanca);
+		//console.log("igralec ni def");
+	}
+});
 
 console.log("loaded main.js");
 

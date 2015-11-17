@@ -6,7 +6,7 @@ function Igralec(){
 	this.friendly = true;		//ne gre za sovražno plovilo
 	this.instanca = null;		//referenca na instanco babylon objekta
 	
-	this.create = function(instanca, scene){
+	this.create = function(instanca, scene, camera){
 		BABYLON.SceneLoader.ImportMesh("Igralec", "obj/", "Igralec.babylon", scene, 
 			function(objectMeshes){
 				instanca = objectMeshes[0].createInstance("igralec");	//ustvari novo instanco objekta z danim id-jem
