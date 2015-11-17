@@ -18,4 +18,4 @@ function Trinitij(){
 	}
 };
 
-console.log("loaded trinitij.js");
+console.log("loaded trinitij.js"); 

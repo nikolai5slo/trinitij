@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-function AsteoridLoader(){		//razred, ki naloži potrebne elemente razreda Asteroid
-	this.mesh = null;			//ogrodje objekta, ki je enako vsem (da se samo 1x naloži)
-	this.material = null;		//material, ki je enak vsem (da se samo 1x naloži)
-=======
 function AsteoridNest(scene){
     var bBox= BABYLON.Mesh.CreateBox("bBox", 700, scene);
     bBox.visibility=0;
@@ -228,7 +223,6 @@ function AsteoridNest(scene){
 function AsteoridLoader(scene){		//razred, ki naloži potrebne elemente razreda Asteroid
 	this.mesh = null;				//ogrodje objekta, ki je enako vsem (da se samo 1x naloži)
 	this.material = null;			//material, ki je enak vsem (da se samo 1x naloži)
->>>>>>> origin/master
 	
 	//preberemo in shranimo ogrodje
 	this.initializeLoader() = function(mesh, material, scene){
@@ -274,9 +268,6 @@ function Asteroid(){										//razred Asteroid
 		);
 	}
 };
-<<<<<<< HEAD
 
 console.log("loaded asteroid.js");
-=======
 */
->>>>>>> origin/master
