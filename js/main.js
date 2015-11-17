@@ -3,6 +3,9 @@ var trinitij = null;
 var nasprotniki = [];
 var centerX = null;
 var centerY = null;
+var mouseX = 0;
+var mouseY = 0;
+var camera = null;
 
 function randomNumber(min,max){
 	return (Math.random()*(max-min))+min;
@@ -29,7 +32,7 @@ window.onload = function(){
 		//var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
 		//camera.attachControl(canvas, true);
 		
-		var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 15, -50), scene);
+		camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 15, -50), scene);
 		
 		/**********************
 		????KREACIJA MEGLIC????
@@ -57,7 +60,7 @@ window.onload = function(){
 		/**************************
 			KREACIJA ASTEROIDOV
 		**************************/
-		//var astNest=AsteoridNest(scene);
+		var astNest=AsteoridNest(scene);
 
 		/***********************
 			KREACIJA SKYBOXA
@@ -92,7 +95,6 @@ window.onload = function(){
 		var earth=new Earth(5500.0, scene);
 		earth.position=new BABYLON.Vector3(0,-5000,0)
 
-
 		// Create dynamic stars
 		return scene;
 	};
@@ -110,6 +112,29 @@ window.onload = function(){
 		if(centerX == null & centerY == null){
 			centerX = window.innerWidth/2;
 			centerY = window.innerHeight/2;
+			mouseX = window.innerWidth/2;
+			mouseY = window.innerHeight/2;
+		}
+		if(centerX != null && centerY != null){
+			if(igralec != null && igralec.instanca != null){
+				if(mouseX < centerX){
+					igralec.instanca.rotate(new BABYLON.Vector3(0, 1, 0), 0.03 *
+						Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
+				}
+				else if(mouseX > centerX){
+					igralec.instanca.rotate(new BABYLON.Vector3(0,-1,0), 0.03 *
+						Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
+				}
+				if(mouseY < centerY - 50){
+					igralec.instanca.rotate(new BABYLON.Vector3(-1,0,0), 0.03 *
+						Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
+				}
+				else if(mouseY > centerY + 50){
+					igralec.instanca.rotate(new BABYLON.Vector3(1,0,0), 0.03 *
+						Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
+				}
+				camera.rotation = igralec.instanca.rotation;
+			}
 		}
 		//TODO else izpiši da je zmagal
 		
@@ -124,40 +149,26 @@ window.onload = function(){
 		centerX = window.innerWidth/2;
 		centerY = window.innerHeight/2;
 	});
-}
-
-
-
-window.addEventListener("mousemove", function(event){
-	var mouseX = event.clientX;
-	var mouseY = event.clientY;
 	
-	if(centerX != null && centerY != null){
-		if(igralec != null && igralec.instanca != null){
-			if(mouseX < centerX){
-				igralecMesh.rotate(new BABYLON.Vector3(0, 1, 0), 0.03 *
-					Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
+	function popraviInstance(ime){
+		for(mesh in engine.scenes[0].meshes){
+			if(engine.scenes[0].meshes[mesh].name == ime){
+				return engine.scenes[0].meshes[mesh];
 			}
-			else if(mouseX > centerX){
-				igralecMesh.rotate(new BABYLON.Vector3(0,-1,0), 0.03 *
-					Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
-			}
-			if(mouseY < centerY - 50){
-				igralecMesh.rotate(new BABYLON.Vector3(-1,0,0), 0.03 *
-					Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
-			}
-			else if(mouseY > centerY + 50){
-				igralecMesh.rotate(new BABYLON.Vector3(1,0,0), 0.03 *
-					Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
-			}
-			//console.log(igralec.instanca.rotate);
-			console.log("roatcija");
 		}
-		//console.log(igralec);
-		console.log(igralec.instanca);
-		//console.log("igralec ni def");
+		return null;
 	}
-});
+
+	window.addEventListener("mousemove", function(event){
+		mouseX = event.clientX;
+		mouseY = event.clientY;
+		
+		if(igralec != null && igralec.instanca == null){
+			igralec.instanca = popraviInstance("igralec");
+			//console.log(igralec.instanca);
+		}
+	});
+}
 
 console.log("loaded main.js");
 
