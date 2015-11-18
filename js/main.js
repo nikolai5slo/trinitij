@@ -68,8 +68,8 @@ window.onload = function(){
     var earth=new Earth(5500.0, scene);
     earth.position=new BABYLON.Vector3(5000,-400,6000);
  
-    skybox.parent=player;
-    sun.parent=player;
+    skybox.parent=player.ship;
+    sun.parent=player.ship;
 
 
     scene.registerBeforeRender(function() {
