@@ -1,5 +1,5 @@
-function AsteroidNest(diameter, scene){
-    var direction=new BABYLON.Vector3(0,0,-8);
+function AsteroidNest(diameter, speed, scene){
+    var direction=new BABYLON.Vector3(0,0,-speed);
     var bBox= BABYLON.Mesh.CreateBox("bBox", diameter, scene);
     //bBox.visibility=0;
     bBox.target=null;

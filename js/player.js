@@ -1,4 +1,4 @@
-function Player(scene){
+function Player(speed, scene){
   	var point = new BABYLON.Mesh("point", scene);
 	var pickPlane = BABYLON.Mesh.CreatePlane("plane", 200.0, scene);
 	pickPlane.position.z-=100;
@@ -50,7 +50,7 @@ function Player(scene){
 			//backgroundTexture2.drawText(""+Math.round(player.position.z/10), null, 350, "bold 205px Segoe UI", "white", "#555555");
 
           	score.innerHTML="Score:"+Math.round(player.position.z/10);
-			player.translate(new BABYLON.Vector3(0, 0, -2.5), 1, BABYLON.Space.LOCAL);
+			player.translate(new BABYLON.Vector3(0, 0, -speed), 1, BABYLON.Space.LOCAL);
 			//player.translate(new BABYLON.Vector3(0, 0, -3), 1, BABYLON.Space.WORLD);
 			//player.moveWithCollisions(new BABYLON.Vector3(0,0,-1.5));
 

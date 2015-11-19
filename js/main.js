@@ -24,10 +24,10 @@ window.onload = function(){
 
     //camera.attachControl(canvas, true);
 
-    var astNest=AsteroidNest(4000, scene);
+    var astNest=AsteroidNest(4000, 21, scene);
     astNest.scaling.z*=6;
 
-    var player = new Player(scene);
+    var player = new Player(2.5, scene);
     astNest.target=player;
     //astNest.parent=player.player;
 
