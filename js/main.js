@@ -134,8 +134,8 @@ window.onload = function(){
 			scene.render();
 			//izrisati je treba še števec časa
 		} else {
-      console.log("GAME OVER");
-    }
+		  console.log("GAME OVER");
+		}
 
 		if(centerX == null & centerY == null){
 			centerX = window.innerWidth/2;
@@ -145,35 +145,46 @@ window.onload = function(){
 		}
 		if(centerX != null && centerY != null){
 			if(igralec != null && igralec.instanca != null){
-        if (mouseOnScreen) {
-  				if(mouseX < centerX){
-  					igralec.instanca.rotate(new BABYLON.Vector3(0, 1, 0), 0.03 *
-  						Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
-  				}
-  				else if(mouseX > centerX){
-  					igralec.instanca.rotate(new BABYLON.Vector3(0,-1,0), 0.03 *
-  						Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
-  				}
-  				if(mouseY < centerY - 50){
-  					igralec.instanca.rotate(new BABYLON.Vector3(-1,0,0), 0.03 *
-  						Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
-  				}
-  				else if(mouseY > centerY + 50){
-  					igralec.instanca.rotate(new BABYLON.Vector3(1,0,0), 0.03 *
-  						Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
-  				}
-  				camera.rotation = igralec.instanca.rotation;
-        }
+				if (mouseOnScreen) {
+					if(mouseX < centerX - 50){
+						igralec.instanca.rotate(new BABYLON.Vector3(0, 1, 0), 0.03 *
+							Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
+					}
+					else if(mouseX > centerX + 50){
+						igralec.instanca.rotate(new BABYLON.Vector3(0,-1,0), 0.03 *
+							Math.round(Math.abs((centerX - mouseX)/200), BABYLON.Space.LOCAL));
+					}
+					if(mouseY < centerY - 50){
+						igralec.instanca.rotate(new BABYLON.Vector3(-1,0,0), 0.03 *
+							Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
+					}
+					else if(mouseY > centerY + 50){
+						igralec.instanca.rotate(new BABYLON.Vector3(1,0,0), 0.03 *
+							Math.round(Math.abs((centerY - mouseY)/200), BABYLON.Space.LOCAL));
+					}
+				}
 			}
 		}
 
-    if (mvtDirection.FORWARD != 0) {
-        igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), 1, BABYLON.Space.LOCAL);
-    } else if (mvtDirection.BACKWARD != 0) {
-        igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), -1, BABYLON.Space.LOCAL);
-    } else if (TIME_SPENT > 2){
-        igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), 0.05, BABYLON.Space.LOCAL);
-    }
+		if (mvtDirection.FORWARD != 0) {
+			igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), 2.5, BABYLON.Space.LOCAL);
+		} else if (mvtDirection.BACKWARD != 0) {
+			igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), 0.5, BABYLON.Space.LOCAL);
+		} else if (TIME_SPENT > 2){
+			igralec.instanca.translate(new BABYLON.Vector3(0, 0, -2.5), 1.5, BABYLON.Space.LOCAL);
+		}
+		
+		if(mvtDirection.LEFT == 1){
+			igralec.instanca.rotate(new BABYLON.Vector3(0,0,-1), 0.1, BABYLON.Space.LOCAL);
+		}
+		if(mvtDirection.RIGHT == 1){
+			igralec.instanca.rotate(new BABYLON.Vector3(0,0,1), 0.1, BABYLON.Space.LOCAL);
+		}
+		
+		if(igralec != null && igralec.instanca != null){
+			//camera.rotation = igralec.instanca.rotation;
+		}
+		
 		//TODO else izpiši da je zmagal
 		
 		/*if((Math.floor(TIME_SPENT) % 60) == 0) {
@@ -220,6 +231,16 @@ window.onload = function(){
             mvtDirection.BACKWARD = 1;
             mvtDirection.KEYDOWN = 1;
             break;
+		case KEYBOARD.A :
+            //mvtDirection[0] = 0;  // FORWARD
+            mvtDirection.LEFT = 1;
+            mvtDirection.KEYDOWN = 1;
+            break;
+        case KEYBOARD.D :
+            //mvtDirection[1] = 0;  // BACKWARD
+            mvtDirection.RIGHT = 1;
+            mvtDirection.KEYDOWN = 1;
+            break;
         case KEYBOARD.UP :
             mvtDirection.UP = 1;
             mvtDirection.KEYDOWN = 1;
@@ -254,6 +275,16 @@ window.onload = function(){
         case KEYBOARD.S :
             //mvtDirection[1] = 0;  // BACKWARD
             mvtDirection.BACKWARD = 0;
+            mvtDirection.KEYDOWN = 0;
+            break;
+		case KEYBOARD.A :
+            //mvtDirection[0] = 0;  // FORWARD
+            mvtDirection.LEFT = 0;
+            mvtDirection.KEYDOWN = 0;
+            break;
+        case KEYBOARD.D :
+            //mvtDirection[1] = 0;  // BACKWARD
+            mvtDirection.RIGHT = 0;
             mvtDirection.KEYDOWN = 0;
             break;
         case KEYBOARD.UP :
