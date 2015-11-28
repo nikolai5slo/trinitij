@@ -23,32 +23,29 @@
 		<script src="js/hand.minified-1.2.js"></script>
 		<script src="js/oimo.min.js"></script>
 		<script src="js/babylon.js"></script>
-
+		
 		<script src="js/player.min.js"></script>
 		<script src="js/asteroid.min.js"></script>
 		<script src="js/sun.min.js"></script>
 		<script src="js/earth.min.js"></script>
 		<script src="js/main.min.js"></script>
-
+		
 		<script type="application/vertexShader" id="vertexShaderCode">
 			precision highp float;
-	 
-			// Attributes
+			
 			attribute vec3 position;
 			attribute vec2 uv;
-	 
-			// Uniforms
+			
 			uniform mat4 worldViewProjection;
-	 
-			// Normal
+			
 			varying vec2 vUV;
 			varying vec2 resolution;
 			varying float time;
 			varying vec2 mouse;
-	 
+			
 			void main(void) {
 				gl_Position = worldViewProjection * vec4(position, 1.0);
-	 
+				
 				vUV = uv;
 				resolution = vec2(1.0,1.0);
 				time = 1.0;
@@ -57,28 +54,24 @@
 		</script>
 		<script type="application/fragmentShader" id="fragmentShaderCode">
 			precision highp float;
-
+			
 			varying vec2 vUV;
 			varying vec2 resolution;
 			varying vec2 mouse;
 			varying float time;
-
+			
 			#ifdef GL_ES
 			precision mediump float;
 			#endif
-
-			// Perlin noise
-
-
+			
 			float noise2(vec2 p) {
 				return fract(sin(15.8 * p.x + 35.7 * p.y) * 43648.23)*2.0 - 1.0;
 			}
-
+			
 			float dotGridGradient(vec2 ip, vec2 p){
-				// noise2 function that returns a vec2 would be better
 				return dot(p - ip, vec2(noise2(ip), noise2(ip + 100.0)));
 			}
-
+			
 			float noise(vec2 p){
 				vec2 ip = floor(p), u = fract(p);
 				u = (3.0 - 2.0*u)*u*u;
@@ -88,7 +81,7 @@
 				float f3 = dotGridGradient(ip + vec2(1.0, 1.0), p);
 				return mix(mix(f0, f1, u.x), mix(f2, f3, u.x), u.y);
 			}
-
+			
 			void main() {
 				vec2 p = gl_FragCoord.xy / resolution.xy * 10.0/mouse.y;
 				p.x *= resolution.x/resolution.y;
@@ -99,7 +92,7 @@
 	<body>
 		<canvas id="canvas"></canvas>
 		<div id="overText" style="display:none; position: absolute;
-		top: 50%; font-size:10em; width:100%; text-align:center; background:rgba(200,200,200,0.5);">GAME OVER</div>
+		top: 50%; font-size:10em; width:100%; text-align:center; background:rgba(200,200,200,0.5);"></div>
 		<div style="display:block; position: absolute;
 		top: 10px; left:3px;
 		font-size:2em; background:rgba(0,0,0,0.2); color:white;" id="score">Score:0</div>
